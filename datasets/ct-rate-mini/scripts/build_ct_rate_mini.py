@@ -1,58 +1,54 @@
-from datasets import load_dataset
+# datasets/ct-rate-mini/scripts/build_ct_rate_mini.py
+
 import os
 import json
 import shutil
+from pathlib import Path
 
-# TODO: Change this path to wherever you place the official CT-RATE images
-OFFICIAL_IMG_ROOT = os.path.expanduser("~/CT-RATE/images")
+# Where CT-RATE is on your server
+OFFICIAL_IMG_ROOT = Path(os.path.expanduser("~/kangwa/CT-RATE/dataset/train"))
 
-BASE_DIR = os.path.join("datasets", "ct-rate-mini", "data")
-IMG_DIR = os.path.join(BASE_DIR, "images")
-NUM_SAMPLES = 15
+# Where the mini dataset should be built
+OUT_ROOT = Path(__file__).resolve().parents[1] / "data"
+IMG_OUT = OUT_ROOT / "images"
+ANN_OUT = OUT_ROOT / "annotations.json"
 
-os.makedirs(IMG_DIR, exist_ok=True)
+MAX_SAMPLES = 15
 
-print("Building CT-RATE mini dataset from official images...")
+def main():
+    IMG_OUT.mkdir(parents=True, exist_ok=True)
 
-ds = load_dataset(
-    "ibrahimhamamci/CT-RATE",
-    "reports",
-    split="train",
-    streaming=True
-)
+    collected = []
+    for sub in sorted(OFFICIAL_IMG_ROOT.iterdir()):
+        if not sub.is_dir():
+            continue
 
-records = []
-count = 0
+        for f in sub.iterdir():
+            if f.suffixes[-2:] == [".nii", ".gz"]:
+                collected.append(f)
+                if len(collected) >= MAX_SAMPLES:
+                    break
+        if len(collected) >= MAX_SAMPLES:
+            break
 
-for sample in ds:
-    if count >= NUM_SAMPLES:
-        break
+    if not collected:
+        print("No .nii.gz files found under CT-RATE/train/")
+        return
 
-    vol = sample["VolumeName"]  # e.g. train_1a_1.nii.gz
-    src = os.path.join(OFFICIAL_IMG_ROOT, vol)
+    annotations = []
+    for i, src in enumerate(collected):
+        dst = IMG_OUT / f"case_{i:03d}.nii.gz"
+        shutil.copy2(src, dst)
+        annotations.append({
+            "id": f"case_{i:03d}",
+            "source": str(src),
+            "image": str(dst)
+        })
 
-    # Skip if this CT volume is not present on disk
-    if not os.path.exists(src):
-        continue
+    with open(ANN_OUT, "w") as f:
+        json.dump(annotations, f, indent=2)
 
-    text = (
-        sample.get("Findings_EN", "") + "\n" +
-        sample.get("Impressions_EN", "")
-    ).strip()
+    print(f"Built CT-RATE mini set with {len(collected)} samples.")
 
-    dst_name = f"case_{count:03d}.nii.gz"
-    dst = os.path.join(IMG_DIR, dst_name)
-
-    shutil.copyfile(src, dst)
-
-    records.append({
-        "image": f"images/{dst_name}",
-        "text": text
-    })
-
-    count += 1
-
-with open(os.path.join(BASE_DIR, "annotations.json"), "w") as f:
-    json.dump(records, f, indent=2)
-
-print(f"Built CT-RATE mini set with {count} samples.")
+if __name__ == "__main__":
+    main()
