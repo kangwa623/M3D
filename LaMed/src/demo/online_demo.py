@@ -16,7 +16,17 @@ from LaMed.src.model.language_model import *
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description="M3D-LaMed chat")
-    parser.add_argument('--model_name_or_path', type=str, default="./LaMed/output/LaMed-Phi3-4B-finetune-0000/hf/", choices=[])
+#   edited the line below to avoid errors
+#   parser.add_argument('--model_name_or_path', type=str, default="./LaMed/output/LaMed-Phi3-4B-finetune-0000/hf/", choices=[])
+#   edited the line above for future reference.
+
+    parser.add_argument(
+        '--model_name_or_path',
+        type=str,
+        default="GoodBaiBai88/M3D-LaMed-Llama-2-7B",
+    )
+
+
     parser.add_argument("--vis_save_path", default="./vis_output", type=str)
     parser.add_argument(
         "--precision",
