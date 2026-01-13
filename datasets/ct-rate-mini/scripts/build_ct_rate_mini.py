@@ -1,12 +1,18 @@
 from datasets import load_dataset
-import os, json, shutil
+import os
+import json
+import shutil
 
-OFFICIAL_IMG_ROOT = os.path.expanduser("~/datasets/ct-rate-images")
+# TODO: Change this path to wherever you place the official CT-RATE images
+OFFICIAL_IMG_ROOT = os.path.expanduser("~/CT-RATE/images")
+
 BASE_DIR = os.path.join("datasets", "ct-rate-mini", "data")
 IMG_DIR = os.path.join(BASE_DIR, "images")
 NUM_SAMPLES = 15
 
 os.makedirs(IMG_DIR, exist_ok=True)
+
+print("Building CT-RATE mini dataset from official images...")
 
 ds = load_dataset(
     "ibrahimhamamci/CT-RATE",
@@ -22,11 +28,12 @@ for sample in ds:
     if count >= NUM_SAMPLES:
         break
 
-    vol = sample["VolumeName"]           # e.g. train_1a_1.nii.gz
+    vol = sample["VolumeName"]  # e.g. train_1a_1.nii.gz
     src = os.path.join(OFFICIAL_IMG_ROOT, vol)
 
+    # Skip if this CT volume is not present on disk
     if not os.path.exists(src):
-        continue  # skip if that CT is not in your archive
+        continue
 
     text = (
         sample.get("Findings_EN", "") + "\n" +
@@ -35,6 +42,7 @@ for sample in ds:
 
     dst_name = f"case_{count:03d}.nii.gz"
     dst = os.path.join(IMG_DIR, dst_name)
+
     shutil.copyfile(src, dst)
 
     records.append({
