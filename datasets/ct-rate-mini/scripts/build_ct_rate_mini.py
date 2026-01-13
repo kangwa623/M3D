@@ -1,14 +1,9 @@
-# datasets/ct-rate-mini/scripts/build_ct_rate_mini.py
-
 import os
 import json
 import shutil
 from pathlib import Path
 
-# Where CT-RATE is on your server
 OFFICIAL_IMG_ROOT = Path(os.path.expanduser("~/kangwa/CT-RATE/dataset/train"))
-
-# Where the mini dataset should be built
 OUT_ROOT = Path(__file__).resolve().parents[1] / "data"
 IMG_OUT = OUT_ROOT / "images"
 ANN_OUT = OUT_ROOT / "annotations.json"
@@ -19,15 +14,16 @@ def main():
     IMG_OUT.mkdir(parents=True, exist_ok=True)
 
     collected = []
-    for sub in sorted(OFFICIAL_IMG_ROOT.iterdir()):
-        if not sub.is_dir():
+
+    for folder in sorted(OFFICIAL_IMG_ROOT.iterdir()):
+        if not folder.is_dir():
             continue
 
-        for f in sub.iterdir():
-            if f.suffixes[-2:] == [".nii", ".gz"]:
-                collected.append(f)
-                if len(collected) >= MAX_SAMPLES:
-                    break
+        for f in folder.rglob("*.nii.gz"):
+            collected.append(f)
+            if len(collected) >= MAX_SAMPLES:
+                break
+
         if len(collected) >= MAX_SAMPLES:
             break
 
