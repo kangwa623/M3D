@@ -134,6 +134,7 @@ model = model.to(device=device)
 model.eval()
 
 # Gradio
+"""
 examples = [
     [
         "/mnt/hpfs/baaidcai/baifan/M3D/Data/data/examples/example_00.npy",
@@ -160,6 +161,22 @@ examples = [
         "Can you find the organs related to the balance of water and salt? Please output the box.",
     ],
 ]
+"""
+
+# examples from ct-rate mini dataset
+examples = [
+    [
+        "datasets/ct-rate-mini/data/images/case_000.nii.gz",
+        "Describe the CT scan findings.",
+    ],
+    [
+        "datasets/ct-rate-mini/data/images/case_001.nii.gz",
+        "What abnormalities are visible?",
+    ],
+]
+
+
+
 
 description = """
 Due to resource limitations, we run the half-precision (bfloat16) M3D-LaMed-Llama2-7B model on NVIDIA RTX 3090 24G for online demo. \n
