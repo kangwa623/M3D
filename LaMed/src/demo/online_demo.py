@@ -129,7 +129,16 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
     **kwargs
 )
-model = model.to(device=device)
+# model = model.to(device=device)
+
+# code to resolve runtime issue
+model = AutoModelForCausalLM.from_pretrained(
+    args.model_name_or_path,
+    device_map='auto',
+    low_cpu_mem_usage=True,
+    trust_remote_code=True,
+    **kwargs
+)
 
 model.eval()
 
