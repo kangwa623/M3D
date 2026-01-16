@@ -122,13 +122,6 @@ tokenizer = AutoTokenizer.from_pretrained(
     use_fast=False,
     trust_remote_code=True
 )
-model = AutoModelForCausalLM.from_pretrained(
-    args.model_name_or_path,
-    device_map='auto',
-    low_cpu_mem_usage=True,
-    trust_remote_code=True,
-    **kwargs
-)
 # model = model.to(device=device)
 
 # code to resolve runtime issue
@@ -263,8 +256,15 @@ def inference(input_image, input_str, temperature, top_p):
     # Model Inference
     prompt = "<im_patch>" * args.proj_out_num + input_str
 
-    input_id = tokenizer(prompt, return_tensors="pt")['input_ids'].to(device=device)
-    image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=device)
+    # input_id = tokenizer(prompt, return_tensors="pt")['input_ids'].to(device=device)
+    # image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=device)
+
+    # managing GPU placement
+    model_device = next(model.parameters()).device
+
+    input_id = tokenizer(prompt, return_tensors="pt")["input_ids"].to(model_device)
+    image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=model_device)
+
 
     generation, seg_logit = model.generate(image_pt, input_id, seg_enable=args.seg_enable, max_new_tokens=args.max_new_tokens,
                                         do_sample=args.do_sample, top_p=top_p, temperature=temperature)
