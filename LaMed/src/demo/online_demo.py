@@ -219,6 +219,7 @@ def extract_box_from_text(text):
         return None
 
 ## to be implemented
+"""
 def inference(input_image, input_str, temperature, top_p):
     global vis_box
     global seg_mask
@@ -229,6 +230,26 @@ def inference(input_image, input_str, temperature, top_p):
     input_str = bleach.clean(input_str)
 
     print("input_str: ", input_str, "input_image: ", input_image)
+"""
+
+# new code to offset error inthe gradio GUI
+def inference(input_image, input_str, temperature, top_p):
+    global vis_box, seg_mask, image_np, image_rgb
+
+    if input_image is None:
+        raise ValueError("No image provided.")
+
+    # Ensure image is loaded even if change() did not fire
+    if "image_np" not in globals():
+        image_np, _ = image_process(input_image)
+        image_rgb = (np.stack((image_np[0],) * 3, axis=-1) * 255).astype(np.uint8)
+
+    vis_box = [0, 0, 0, 0, 0, 0]
+    seg_mask = np.zeros((32, 256, 256), dtype=np.uint8)
+
+    input_str = bleach.clean(input_str)
+    print("input_str:", input_str, "input_image:", input_image)
+
 
     # Model Inference
     prompt = "<im_patch>" * args.proj_out_num + input_str
