@@ -9,17 +9,13 @@ MODEL = "GoodBaiBai88/M3D-LaMed-Llama-2-7B"
 
 def load_image(path):
     nifti_img = nib.load(path)
-    img = nifti_img.get_fdata()
+    img = nifti_img.get_fdata()  # (D, H, W)
 
     resize = Resize(spatial_size=(32, 256, 256), mode="bilinear")
-    img = resize(img).array
+    img = resize(img).array  # (32, 256, 256)
 
-    # Normalize
-    img = img.astype(np.float32)
-
-    # Add channel + batch dimension
-    img = img[np.newaxis, np.newaxis, :, :, :]   # (1,1,32,256,256)
-
+    # Add channel + batch dimensions → (1, 1, 32, 256, 256)
+    img = img[np.newaxis, np.newaxis, :, :, :]
     return img
 
 def main():
@@ -30,10 +26,8 @@ def main():
     image_path = sys.argv[1]
     prompt = sys.argv[2]
 
-    print("Loading tokenizer & model...")
-
+    print("Loading tokenizer and model...")
     tokenizer = AutoTokenizer.from_pretrained(MODEL, trust_remote_code=True)
-
     model = AutoModelForCausalLM.from_pretrained(
         MODEL,
         device_map="auto",
@@ -48,14 +42,12 @@ def main():
 
     print("Loading image...")
     image_np = load_image(image_path)
-
     image_pt = torch.from_numpy(image_np).to(device=device, dtype=torch.bfloat16)
 
     full_prompt = "<im_patch>" * 256 + prompt
     input_ids = tokenizer(full_prompt, return_tensors="pt")["input_ids"].to(device)
 
     print("Running inference...")
-
     with torch.no_grad():
         generation, _ = model.generate(
             image_pt,
@@ -65,7 +57,6 @@ def main():
         )
 
     output = tokenizer.decode(generation[0], skip_special_tokens=True)
-
     print("\n=== MODEL OUTPUT ===\n")
     print(output)
 
