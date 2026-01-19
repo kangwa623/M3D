@@ -10,9 +10,17 @@ MODEL = "GoodBaiBai88/M3D-LaMed-Llama-2-7B"
 def load_image(path):
     nifti_img = nib.load(path)
     img = nifti_img.get_fdata()
+
     resize = Resize(spatial_size=(32, 256, 256), mode="bilinear")
-    img = resize(img)
-    return img.array
+    img = resize(img).array
+
+    # Normalize
+    img = img.astype(np.float32)
+
+    # Add channel + batch dimension
+    img = img[np.newaxis, np.newaxis, :, :, :]   # (1,1,32,256,256)
+
+    return img
 
 def main():
     if len(sys.argv) < 3:
@@ -22,32 +30,32 @@ def main():
     image_path = sys.argv[1]
     prompt = sys.argv[2]
 
-    print("Loading tokenizer and model...")
+    print("Loading tokenizer & model...")
+
     tokenizer = AutoTokenizer.from_pretrained(MODEL, trust_remote_code=True)
 
     model = AutoModelForCausalLM.from_pretrained(
         MODEL,
         device_map="auto",
         trust_remote_code=True,
-        torch_dtype=torch.float16,   # <-- switch from bf16 to fp16
+        torch_dtype=torch.bfloat16,
         low_cpu_mem_usage=True,
     )
     model.eval()
 
-    model_device = next(model.parameters()).device
-    print(f"Model device: {model_device}")
+    device = next(model.parameters()).device
+    print("Model device:", device)
 
     print("Loading image...")
     image_np = load_image(image_path)
 
-    image_pt = torch.from_numpy(image_np).unsqueeze(0)
-    image_pt = image_pt.to(device=model_device, dtype=torch.float16)
+    image_pt = torch.from_numpy(image_np).to(device=device, dtype=torch.bfloat16)
 
     full_prompt = "<im_patch>" * 256 + prompt
-    input_ids = tokenizer(full_prompt, return_tensors="pt")["input_ids"]
-    input_ids = input_ids.to(model_device)
+    input_ids = tokenizer(full_prompt, return_tensors="pt")["input_ids"].to(device)
 
     print("Running inference...")
+
     with torch.no_grad():
         generation, _ = model.generate(
             image_pt,
@@ -57,6 +65,7 @@ def main():
         )
 
     output = tokenizer.decode(generation[0], skip_special_tokens=True)
+
     print("\n=== MODEL OUTPUT ===\n")
     print(output)
 
