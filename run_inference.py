@@ -9,14 +9,19 @@ MODEL = "GoodBaiBai88/M3D-LaMed-Llama-2-7B"
 
 def load_image(path):
     nifti_img = nib.load(path)
-    img = nifti_img.get_fdata()  # (D, H, W)
+    img = nifti_img.get_fdata()
+
+    # Ensure (D, H, W)
+    if img.ndim == 4:
+        img = img[..., 0]
 
     resize = Resize(spatial_size=(32, 256, 256), mode="bilinear")
-    img = resize(img).array  # (32, 256, 256)
+    img = resize(img).array  # (D, H, W)
 
-    # Add channel + batch dimensions → (1, 1, 32, 256, 256)
-    img = img[np.newaxis, np.newaxis, :, :, :]
-    return img
+    # Add channel dimension -> (1, D, H, W)
+    img = img[np.newaxis, ...]
+
+    return img.astype(np.float32)
 
 def main():
     if len(sys.argv) < 3:
@@ -42,7 +47,9 @@ def main():
 
     print("Loading image...")
     image_np = load_image(image_path)
-    image_pt = torch.from_numpy(image_np).to(device=device, dtype=torch.bfloat16)
+
+    # (1, 1, D, H, W)
+    image_pt = torch.from_numpy(image_np).unsqueeze(0).to(device=device, dtype=torch.bfloat16)
 
     full_prompt = "<im_patch>" * 256 + prompt
     input_ids = tokenizer(full_prompt, return_tensors="pt")["input_ids"].to(device)
@@ -62,3 +69,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
