@@ -1,0 +1,788 @@
+Prompt 1:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 心脏瓣膜病
+    - Examination Notes: 二尖瓣上异常回声，考虑二尖瓣副瓣，轻度返流_x000D_
+卵圆孔未闭
+    - Examination Findings: 二尖瓣前叶稍厚，瓣叶活动正常，瓣上见一片状回声连接乳头肌及前叶根部，血流动力学未见明显异常；_x000D_
+余瓣膜形态及活动正常；_x000D_
+各房室不大，左室壁运动正常；_x000D_
+各瓣膜_x000D_
+原发隔及继发隔分离3.1mm，见左向右返流；_x000D_
+室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：二尖瓣返流，彩束面积 2.2cm2；
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 2:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 头痛
+    - Examination Notes: 心内结构未见明显异常
+    - Examination Findings: 各房室不大，左室壁运动正常；_x000D_
+各瓣膜形态及活动正常；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：心内未见异常彩色血流信号；_x000D_
+
+    - Left Ventricular Ejection Fraction: 67.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 3:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 冠状动脉支架植入后状态
+    - Examination Notes: 左室舒张功能减退
+    - Examination Findings: 各房室不大，室壁运动正常；
+各瓣膜形态及活动正常；
+房室间隔未见中断，未见PDA征；
+心包腔未见液性暗区；
+
+CDFI：心内未见异常返流信号。
+    - Left Ventricular Ejection Fraction: 77.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 4:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 先天性心脏病   动脉导管未闭（双向分流）   轻度肺动脉瓣返流 重度肺动脉高压 轻度三尖瓣返流
+    - Examination Findings: 外周血压103/69mmHg 降主动脉与肺动脉分叉处见管型回声相通，宽约9.6mm，多普勒获及双向低速分流信号，两大血管间收缩期右向左分流，Vmax 2.06m/s，压差17mmHg，舒张期左向右分流，Vmax1.5m/s，压差9mmHg； 右心相对增大，左心室受压，相对较小，呈"D"字征改变，左室壁运动正常；主肺动脉显著增宽，左右肺动脉起始段内径分别宽22mm、20mm，左室舒张末容积19ml，收缩末容积5ml；肺动脉瓣增厚，局灶性回声增强，开放尚可，关闭不拢；三尖瓣关闭欠佳；房室间隔连续未见中断；心包腔未见明显积液；下腔静脉内径11mm，随呼吸变异度大于50%； 降主动脉流速1.41m/s; CDFI：肺动脉瓣返流，彩束面积 3.0cm2，估测肺动脉平均压77mmHg；       主动脉瓣返流，彩束面积 2.5cm2      三尖瓣返流，彩束面积2.0cm2；
+    - Left Ventricular Ejection Fraction: 74.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 5:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 呼吸困难
+    - Examination Notes: 双腔右室及室间隔缺损修补术后室水平无残余分流_x000D_
+主动脉窦部瘤样增宽  重度主动脉瓣返流并轻度狭窄_x000D_
+中度二尖瓣返流
+    - Examination Findings: 透声窗差，图像显示欠佳_x000D_
+室间隔修补处完整,未见穿隔彩流；_x000D_
+主动脉窦部明显增宽68mm，升主动脉增宽；主动脉瓣三叶瓣，右冠瓣与无冠瓣交界处增厚、融合，瓣叶开放轻受限，关闭不拢；_x000D_
+主动脉瓣环内径27mm，弓部21mm，降主动脉内径15mm，流速1.5m/s。主动脉瓣反射增强，开放好，关闭不拢；_x000D_
+右室流出道最窄处12mm，血流速度加快达：1.8m/s；_x000D_
+全心增大，左室壁运动稍减低；心包腔内未见液性暗区；_x000D_
+_x000D_CDFI：室水平未见分流；_x000D_
+主动脉瓣返流，彩束面积 12.9cm2；_x000D_
+二尖瓣返流，彩束面积 5.6cm2；
+    - Left Ventricular Ejection Fraction: 55.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 6:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 轻度二尖瓣返流
+    - Examination Findings: 各房室不大，左室壁运动正常； 各瓣膜形态及活动正常； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：二尖瓣返流，彩束面积 1.8cm2； 
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 7:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 主动脉瓣置换术后，人工机械瓣功能良好_x000D_
+轻度三尖瓣返流
+    - Examination Findings: 主动脉瓣人工机械瓣，开放正常，瓣周未见异常回声；_x000D_
+余各瓣膜形态正常；_x000D_
+室壁运动正常_x000D_
+未见心包积液；_x000D_
+_x000D__x000D_
+CDFI：二尖瓣返流，彩束面积 0.5cm2；_x000D_
+      三尖瓣返流，彩束面积3.1 cm2，估测肺动脉收缩压18 mmHg。_x000D_
+_x000D__x000D_
+
+    - Left Ventricular Ejection Fraction: 60.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 8:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 抗肾小球基底膜抗体病
+    - Examination Notes: 卵圆孔未闭
+轻度三尖瓣返流
+    - Examination Findings: 各房室不大，左室壁运动正常；
+各瓣膜形态及活动正常；
+室间隔未见中断，未见PDA征；
+心包腔未见液性暗区；
+
+CDFI：房间隔中部左房向右房分流小彩束宽约1.5mm；
+      二尖瓣返流，彩束面积1.0 cm2；
+      主动脉瓣返流，彩束面积 1.0cm2；
+      三尖瓣返流，彩束面积1.5 cm2，估测肺动脉收缩压32 mmHg。
+    - Left Ventricular Ejection Fraction: 62.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 9:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 考虑心肌病变左室流出道轻度梗阻
+    - Examination Findings: 左房扩大，左室下壁、左室心尖部室壁变薄，回声增强，运动稍减弱，室间隔基底段增厚，左室面见粗大肌束附着；二尖瓣前叶瓣下腱索冗长，见SAM征，余各瓣膜形态正常；房室间隔未见中断，未见PDA征；心包腔未见液性暗区；多普勒：左室流出道流速加速2.2m/s，压差20mmHg。
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 10:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 轻度二尖瓣返流 轻度三尖瓣返流
+    - Examination Findings: 各房室不大，左室壁运动正常； 各瓣膜形态正常； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：二尖瓣返流，彩束面积 2.5cm2；       三尖瓣返流，彩束面积 1.5cm2，估测肺动脉收缩压 28mmHg。 
+    - Left Ventricular Ejection Fraction: 58.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 11:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 先天性心脏病   部分型心内膜垫缺损 二尖瓣前叶裂，重度返流 中度三尖瓣返流，中度肺高压 右室收缩功能减低  少量心包积液
+    - Examination Findings: 全心扩大，室间隔与左室后壁同向运动，余左室壁运动正常，右室壁运动减弱； 房间隔下部回声中断，断口大小23mm，彩色多普勒显示左向右分流；室间隔膜部呈呈小瘤样向右室膨出，大小（底×高）：7.8×4.7mm，未见明显分流； 三尖瓣与二尖瓣等高位，二尖瓣瓣尖增厚，前叶A2见裂隙，大小约 6.6mm，开放好，关闭不拢；三尖瓣瓣环扩张，关闭不拢； 主肺动脉增宽，左肺动脉19mm，右肺动脉22mm；未见PDA，体静脉回流入右房，肺静脉回流入左房；下腔静脉直径22mm，塌陷率＜50%； 心包腔见液性暗区：右房后壁13mm，左室后壁后6.2mm，左室侧壁6mm； CDFI：二尖瓣返流，彩束面积 20cm2；       三尖瓣返流，彩束面积 5.3cm2，估测肺动脉收缩压 62mmHg。
+    - Left Ventricular Ejection Fraction: 67.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 12:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 二尖瓣后叶脱垂，部分腱索断裂，极重度返流 轻度主动脉瓣返流 中度三尖瓣返流  轻度肺高压
+    - Examination Findings: 主动脉搏动正常； 二尖瓣后叶冗长，腱索纤细，收缩期脱向左房，P2为主，累及P1，后叶瓣尖部见纤细条索状回声呈连枷样运动；EROA 0.81cm2， MRV 131ml; 主动脉瓣、三尖瓣、肺动脉瓣形态未见异常； 左房左室扩大，室壁运动正常； 房室间隔连续完整；  CDFI：二尖瓣返流，彩束面积 11cm2；       主动脉瓣返流，彩束面积 1.6cm2；       三尖瓣返流，彩束面积 4.1cm2，估测肺动脉收缩压 47mmHg。
+    - Left Ventricular Ejection Fraction: 75.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 13:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 冠状动脉-肺动脉瘘术后，少量残余分流 轻度三尖瓣返流
+    - Examination Findings: 左、右冠状动脉增宽，右冠状动脉与主肺动脉间探及多束异常血流信号（连续性分流），于右室壁前方迂曲走行，最宽处束宽约7.7mm，主肺动脉近肺动脉瓣上左侧壁探及一处瘘口，宽约4.8mm，连续性分流，血流速度约2.0m/s； 各房室不大，右室内未见明显异常血流交通；室壁运动尚可； 各瓣膜形态正常； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：三尖瓣返流，彩束面积 2.1cm2，估测肺动脉收缩压24mmHg。 
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 14:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 左室舒张功能减退
+    - Examination Findings: 各瓣膜形态正常； 二尖瓣EF斜率减慢，血流频谱呈松弛减退型； 各房室不大，室壁运动尚好； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：心内未见异常彩色血流信号；
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 15:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 左房增大 轻度二尖瓣返流 轻度三尖瓣返流 轻度主动脉瓣返流
+    - Examination Findings: 升主动脉稍增宽； 二尖瓣后叶瓣环见钙化，余瓣膜形态正常； 左房增大，左房左心耳未见附壁血栓； 室壁搏动尚可； 心包腔未见积液；  CDFI：二尖瓣返流，彩束面积 3.8cm2；       主动脉瓣返流，彩束面积 1.9cm2；       三尖瓣返流，彩束面积 1.5cm2。
+    - Left Ventricular Ejection Fraction: 50.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 16:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 主动脉瓣、二尖瓣置换术后，人工机械瓣口血栓形成（结合病史），二尖瓣机械瓣外侧瓣叶不活动 中度三尖瓣返流，中度肺动脉高压 房水平分流
+    - Examination Findings: 患者平卧位，透声窗差； 主动脉瓣人工机械瓣开放正常，瓣口可见小团絮状低回声附着摆动，大小约 0.9×0.3cm； 二尖瓣人工机械瓣内侧瓣叶开放关闭好，瓣口可见小团絮状低回声附着摆动，大小约 0.8×0.4cm，外侧瓣叶未能活动，处于关闭状态； 三尖瓣见整形后征象； 房间隔见连续性中断 2.8cm，见左向右过隔彩流； 左房轻度扩大，室壁运动正常； 心包腔内未见液性暗区；  CDFI：三尖瓣返流，彩束面积 6.9cm2，估测肺动脉收缩压69mmHg。
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 17:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 风湿性二尖瓣狭窄
+    - Examination Notes: 二尖瓣置换术后，人工机械瓣功能良好
+右房团块状回声，考虑粗大界嵴
+
+    - Examination Findings: 二尖瓣人工机械瓣开放正常，瓣周未见异常回声；
+三尖瓣见整形后征象；
+其余各瓣膜形态正常；
+左房扩大，未见血栓，左室壁运动正常；
+右房见粗大界嵴，其断面回声呈团块状，内未见明显血流信号；
+未见心包积液；
+
+CDFI：各瓣区未见明显返流。
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 18:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 肥厚型梗阻性心肌病
+    - Examination Notes: 二尖瓣置换术后，人工生物瓣功能良好_x000D_
+肥厚型心肌病，左、右室流出道疏通术后_x000D_
+轻度三尖瓣返流
+    - Examination Findings: 二尖瓣人工生物瓣瓣叶纤细，活动正常，瓣周未见异常回声；其余瓣膜形态正常；_x000D_
+左室偏小,左室壁增厚，运动尚好；_x000D_
+右室腔局部见肥厚肌束，右室流出道血流通畅；_x000D_
+未见心包积液；_x000D_
+_x000D__x000D_
+CDFI：收缩期左室流出道血流速度 1.54m/s；_x000D_
+      收缩期右室流出道血流速度 1.5m/s；_x000D_
+      三尖瓣返流，彩束面积 3.9cm2，估测右室收缩压 34mmHg。
+    - Left Ventricular Ejection Fraction: 73.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 19:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 符合心肌梗死后超声改变，左室收缩、舒张功能减退 左、右冠状动脉局部瘤样扩张（既往血管炎病史） 轻度二尖瓣返流
+    - Examination Findings: 检查时心率100次/分； 左、右冠脉起源位置未见异常，左前降支近段局部管腔瘤样扩张，最宽径约6mm；右冠状动脉近段局部瘤样扩张，最宽径约5mm； 左室扩大，左室下后壁及侧壁室壁变薄，搏动明显减弱，后间隔运动减低，余室壁运动相对较好，左室心尖部肌小梁丰富，未见附壁血栓； 二尖瓣缘稍增厚，后叶受牵拉活动僵硬，前后叶对合不拢，余各瓣膜形态正常； 房室间隔连续完整； 心包腔未见液性暗区；  CDFI：二尖瓣返流，彩束面积2.6cm2；       三尖瓣返流，彩束面积1.8cm2;估测肺动脉收缩压26mmHg；
+    - Left Ventricular Ejection Fraction: 30.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 20:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 感染性心内膜炎 二叶主动脉瓣多发赘生物形成，瓣叶穿孔，重度返流 轻度二尖瓣返流 少量心包积液 
+    - Examination Findings: 主动脉瓣为二叶瓣，瓣环内径24mm,瓣叶增厚，回声增强，表面毛糙，瓣叶上见多个絮状低（中等强度）回声飘动，较大为 24×5.8 mm，瓣体连续中断；其余瓣膜形态尚可； 左房、左室扩大，室壁运动正常；房室间隔未见中断，未见PDA征； 心包腔可见液性暗区：左室后壁9.9mm，右房顶10.6mm；下腔静脉内径21mm，呼吸塌陷率小于50%；  CDFI：二尖瓣返流，彩束面积 2.8cm2；主动脉瓣返流，彩束面积 17cm2；
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 21:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 室间隔心肌切除术后，左室流出道血流通畅主动脉瓣修补术后，中度返流主动脉窦部及升主动脉扩张
+    - Examination Findings: 主动脉窦部内径43mm，升主动脉扩张；主动脉瓣三叶瓣，右冠瓣回声增强，活动稍僵硬，对合不拢；左心扩大，室间隔基底段中段见切迹，连续性完整，室壁运动尚可；心包腔未见液性暗区；CDFI:主动脉瓣返流，彩束面积6.8cm2。收缩期左室流出道流速Vmax1.2m/s，压差6mmHg；
+    - Left Ventricular Ejection Fraction: 68.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 22:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 左室舒张功能减退
+轻度二尖瓣返流
+轻度三尖瓣返流
+微量心包积液
+    - Examination Findings: 各瓣膜形态尚可；
+二尖瓣EF斜率减慢，血流频谱呈松弛减退型；
+各房室不大，室壁运动欠协调，收缩幅度尚可；
+房间隔中部菲薄，随心动周期左右摆动，未见明确回声脱失；室间隔未见中断，未见PDA征；
+心包腔见液性暗区：右室前壁前3mm，右室心尖部3mm；
+
+CDFI：二尖瓣返流，彩束面积 1.6cm2；
+      主动脉瓣返流，彩束面积 0.5cm2；
+      三尖瓣返流，彩束面积 3.9cm2，估测肺动脉收缩压 23mmHg。
+    - Left Ventricular Ejection Fraction: 66.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 23:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 双房轻度扩大 轻度二尖瓣返流 轻度三尖瓣返流
+    - Examination Findings: 双房轻度扩大，左室壁运动正常； 各瓣膜形态及活动正常； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：二尖瓣返流，彩束面积 3.5cm2；       三尖瓣返流，彩束面积 1.8cm2，估测肺动脉收缩压 24mmHg。
+    - Left Ventricular Ejection Fraction: 57.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 24:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 冠状动脉粥样硬化
+    - Examination Notes: 考虑心肌病超声改变，请结合临床_x000D_
+左室收缩舒张功能减低_x000D_
+轻度二尖瓣返流_x000D_
+轻度三尖瓣返流_x000D_
+轻度肺高压
+    - Examination Findings: 各瓣膜形态尚可；_x000D_
+左心扩大，左室壁运动不协调，左室下壁、后壁、侧壁变薄，搏动明显减弱，余室壁搏动尚可；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见明显液性暗区；_x000D_
+
+CDFI：二尖瓣返流，彩束面积 3.4cm2；_x000D_
+      三尖瓣返流，彩束面积 2.7cm2，估测肺动脉收缩压 42mmHg。_x000D_
+
+    - Left Ventricular Ejection Fraction: 36.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 25:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 左心耳封堵术后，位置正常左房扩大中度二尖瓣返流轻度主动脉瓣返流中度三尖瓣返流轻度肺高压房水平两束分流
+    - Examination Findings: 主动脉瓣回声增强，活动尚可、余瓣膜形态正常；左房扩大，左心耳内见封堵器回声；室壁搏动正常；房间隔两束见左向右分流信号，彩束宽分别为3.7、5.2mm,心包腔未见积液；CDFI：二尖瓣返流，彩束起面积5.5cm2；主动脉瓣返流，彩束面积3.1cm2；三尖瓣返流，彩束面积5.7cm2，估测肺动脉收缩压42mmHg。
+    - Left Ventricular Ejection Fraction: 67.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 26:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 心尖肥厚型心肌病 左室舒张功能减退
+    - Examination Findings: 主动脉瓣回声增强，余瓣膜形态正常； 左房扩大，左室壁非对称性增厚，左室壁基底段厚度基本正常，中下段明显增厚达17mm； 肥厚的心肌回声增强，室壁搏动尚好； 左室腔中下部狭小，静息状态下未见明显梗阻；  心包腔未见明显液性暗区；  CDFI:心内未见异常彩色血流信号；
+    - Left Ventricular Ejection Fraction: 66.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 27:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 心内结构未见明显异常
+    - Examination Findings: 各房室不大，左室壁运动正常； 各瓣膜形态及活动正常； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：心内未见异常彩色血流信号；
+    - Left Ventricular Ejection Fraction: 61.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 28:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 肾病综合征
+    - Examination Notes: 心内结构未见明显异常
+    - Examination Findings: 各房室不大，左室壁运动正常；_x000D_
+各瓣膜形态及活动正常；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：主动脉瓣返流，彩束面0.8cm2。_x000D_
+      
+
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 29:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 先天性心脏病 动脉导管未闭（管型）肺动脉高压（中-重度） 轻度主动脉瓣返流 重度二尖瓣返流  轻度三尖瓣返流
+    - Examination Findings: 检查时血压134/58mmHg： 降主动脉与肺动脉分叉处见管型回声相通，管径宽8.1mm，多普勒获及连续湍流，两大血管间收缩期Vmax 3.8m/s，压差 57mmHg，舒张期Vmax 2.5m/s，压差 25mmHg； 降主动脉流速 0.77m/s；下腔静脉内径18mm，随呼吸变异率大于50%； 体静脉回流入右房，肺静脉回流入左房； 二尖瓣瓣尖增厚，回声增强，瓣膜开放面积4.02cm2，关闭不拢；主动脉瓣回声稍强，余各瓣膜形态及功能正常；房室间隔完整；左房左室增大，左室壁运动正常； 右室功能参数：右室壁厚度 5.9mm，三尖瓣环M型位移 16mm；三尖瓣环右室壁组织速度S' 9.9cm/s;右室FAC 40%；右房面积11.3cm2; 左室舒张末容积121ml，左室收缩末容积55ml； CDFI：二尖瓣返流，彩束面积8.7cm2；主动脉瓣返流，彩束面积2.0cm2；三尖瓣返流，彩束面积1.5cm2；肺动脉瓣返流面积3.0cm2，估测肺动脉平均压58mmHg；
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 30:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 符合冠心病超声改变 左室收缩舒张功能减低 中度二尖瓣返流 轻度三尖瓣返流
+    - Examination Findings: 各瓣膜形态正常； 左室扩大，左室壁搏动稍减弱； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：二尖瓣返流，彩束面积 5.0cm2；       三尖瓣返流，彩束面积 2.9cm2，估测肺动脉收缩压 28mmHg；
+    - Left Ventricular Ejection Fraction: 45.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 31:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 符合扩张型心肌病超声改变 左室收缩舒张功能明显减低 轻度二尖瓣返流 轻度三尖瓣返流
+    - Examination Findings: 各瓣膜形态正常，二尖瓣血流频谱呈充盈类型：弛缓异常型； 左室明显扩大，左室壁相对变薄,搏动弥漫性低平，室间隔可见弹跳征（左束支传导阻滞所致），心脏内未见附壁血栓； 未见心包积液；下腔静脉内径10.7mm，随呼吸运动塌陷率大于50%；   CDFI：二尖瓣返流，彩束面积 2.6cm2；       三尖瓣返流，彩束面积 2.9cm2，估测肺动脉收缩压 27mmHg。
+    - Left Ventricular Ejection Fraction: 24.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 32:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 具有假体心脏瓣膜
+    - Examination Notes: 二尖瓣置换术后，人工生物瓣轻度狭窄并重度返流，考虑瓣叶损害，建议进一步行经食管三维超声检查_x000D_
+主动脉瓣退行性变，轻度返流_x000D_
+中度三尖瓣返流_x000D_
+重度肺高压
+    - Examination Findings: 二尖瓣人工生物瓣，瓣叶增厚，回声增强，见结节样钙化，表面毛糙，前向流速增快，峰值压差约 31mmHg，平均压差约 11mmHg，瓣叶关闭不拢；_x000D_
+三尖瓣见整形后征象；_x000D_
+主动脉瓣瓣叶稍增厚，回声稍增强，开放尚可，关闭欠佳；_x000D_
+左心增大，左室壁运动尚可；_x000D_
+未见心包积液；
+CDFI：主动脉瓣返流，彩束面积 2.2cm2；_x000D_
+      二尖瓣返流，彩束面积 8.6cm2（源自瓣内）；_x000D_
+      三尖瓣返流，彩束面积 6.8cm2，估测肺动脉收缩压 86mmHg。
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 33:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 考虑感染性心内膜炎，二尖瓣前叶脱垂，赘生物形成，重度二尖瓣返流 轻度三尖瓣返流
+    - Examination Findings: 二尖瓣前叶A3区收缩期脱向左房，该处瓣叶增厚、毛糙，可见絮状强回声飘动，表面毛糙，大小约为12×4.5mm； 其余瓣膜形态正常； 左心相对增大，室壁运动正常； 房室间隔完整；未见心包积液； CDFI：二尖瓣返流，彩束偏心，面积 6.9cm2；       三尖瓣返流，彩束面积 2.4cm2，估测肺动脉收缩压24mmHg；
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 34:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 心内结构未见明显异常
+    - Examination Findings: 各房室不大，左室壁运动正常； 各瓣膜形态及活动正常； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区；  CDFI：心内未见异常彩色血流信号。
+    - Left Ventricular Ejection Fraction: 68.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 35:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 右心占位，性质待查（恶性可能大），请结合临床
+
+    - Examination Findings: 右心室内见不规则低回声团块，附着于右室侧壁，向右室流出道延伸，越过肺动脉瓣，范围约51×17mm；右室及肺动脉瓣未见明显梗阻现象；_x000D_
+右房及下腔静脉腔内未见明显异常团块回声；_x000D_
+左心结构正常，室壁运动正常；_x000D_
+各瓣膜形态及活动正常；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见明显液性暗区；_x000D_
+CDFI：各瓣区未见明显返流。
+    - Left Ventricular Ejection Fraction: 66.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 36:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 心室良性肿瘤
+    - Examination Notes: 左室占位，性质待定_x000D_
+左室流出道梗阻（轻-中度）_x000D_
+轻度二尖瓣返流_x000D_
+轻度三尖瓣返流_x000D_
+微量心包积液
+    - Examination Findings: 各房室不大，左室腔中下部见不均一中等回声团块附着，大小约51mm×28mm，形态不规则，呈多分叶状，内见散在钙化，似以短蒂附着于室间隔左室面上，活动度较大，收缩期部分瘤体凸向左室流出道，致左室流出道血流加速，Vmax 3.2 m/s，△P 40mmHg，平均压差23mmHg；_x000D_
+左室壁运动正常；_x000D_
+二尖瓣闭合欠佳；房室间隔连续未见中断；_x000D_
+心包腔见液性暗区，右室心尖部3mm；下腔静脉内径15mm，随呼吸运动塌陷率>50%；降主动脉前向流速0.99m/s；_x000D_
+CDFI：二尖瓣返流，彩束面积 2.0cm2；_x000D_
+      三尖瓣返流，彩束面积 1.6cm2，估测肺动脉收缩压 22mmHg。
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 37:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 符合冠心病超声改变 左室收缩舒张功能减低 中度二尖瓣返流 中度主动脉瓣返流
+    - Examination Findings: 各瓣膜形态正常； 二尖瓣EF斜率减慢，血流频谱呈松弛减退型； 左心扩大，左室前壁全段、室间隔及前间壁心尖段室壁运动减弱；余室壁运动尚好； 房室间隔未见中断，未见PDA征； 心包腔未见液性暗区； CDFI：二尖瓣返流，彩束面积6.7cm2；       主动脉瓣返流，彩束面积 5.1cm2；       三尖瓣返流，彩束面积1.1cm2，估测肺动脉收缩压29 mmHg。
+    - Left Ventricular Ejection Fraction: 47.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 38:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 左室声学造影提示静息状态下各节段室壁运动好，运动负荷后室壁运动增强，未诱发出节段性室壁运动异常 心肌灌注超声显像示各节段心肌灌注良好，运动负荷后未诱发出灌注减低或缺损
+    - Examination Findings: 运动平板负荷前后左室声学造影及心肌灌注超声对照显像报告： 年龄54岁，检查目的：运动负荷前后心肌灌注及室壁运动对照检查； 目标心率166次/分 方案：BRUCE方案，运动负荷达3级   停止原因：疲劳 血氧饱和度 98%  静息状态下：患者声学造影图像清晰，经肘静脉注射造影剂声诺维后心室腔及心肌逐渐显影，心尖四腔心切面、两腔心切面、三腔心切面及短轴切面见室壁运动好，未见明显节段性室壁运动异常，各节段心肌灌注良好，未见灌注缺损，E/E' 10；  运动平板负荷超声全程过程中患者无明显胸闷、胸痛不适，运动负荷达155次/分（93%）靶心率后复查声学造影，各切面室壁运动增强，未见明显节段性室壁运动异常，各节段心肌灌注良好，未见灌注缺损，E/E' 10； 
+    - Left Ventricular Ejection Fraction: 0.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 39:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 慢性肾炎综合征
+    - Examination Notes: 心内结构未见明显异常
+    - Examination Findings: 检查时心率107次/分；_x000D_
+各房室不大，左室壁运动正常；_x000D_
+各瓣膜形态及活动正常；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：三尖瓣返流，彩束面积 0.7cm2，估测肺动脉收缩压 23mmHg。_x000D_
+_x000D_
+
+
+    - Left Ventricular Ejection Fraction: 60.5%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 40:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 心房扑动
+    - Examination Notes: 二尖瓣置换术后，人工机械瓣功能良好_x000D_
+风湿性主动脉瓣损害，中度主动脉瓣返流并轻度狭窄_x000D_
+中度三尖瓣返流，轻度肺高压
+    - Examination Findings: 二尖瓣人工机械瓣开放正常，瓣周未见异常回声；_x000D_
+三尖瓣及主动脉瓣瓣缘增厚，主动脉瓣开放稍受限，主动脉瓣环径22mm；_x000D_
+左房扩大，未见血栓；_x000D_
+左室壁运动正常；_x000D_
+未见心包积液；_x000D_
+
+CDFI：主动脉瓣返流，彩束面积 5.1cm2；_x000D_
+      三尖瓣返流，彩束面积5.8cm2，估测肺动脉收缩压 38mmHg。_x000D_
+
+    - Left Ventricular Ejection Fraction: 60.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 41:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 左室壁显著增厚，左室舒张功能减退，提示心肌淀粉样变，建议核素PYP检查 轻-中度二尖瓣返流 轻度三尖瓣返流 少量心包积液
+    - Examination Findings: 各瓣叶稍增厚，开放正常；二尖瓣血液流频谱正常； 左房稍大；右室游离壁增厚，厚度5mm；左室壁显著增厚，内部回声不均匀，呈“毛玻璃样”改变； 肌性房间隔增厚，心包腔见液性暗区：右房后方8mm；  CDFI：二尖瓣返流，彩束面积 4.9cm2；       主动脉瓣返流，彩束面积 1.5cm2；       三尖瓣返流，彩束面积 1.5cm2，估测肺动脉收缩压 35mmHg。
+    - Left Ventricular Ejection Fraction: 65.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 42:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 心脏瓣膜病
+    - Examination Notes: 主动脉瓣置换术后，人工机械瓣重度返流，瓣周漏可能，建议食道三维超声检查
+轻度二尖瓣返流
+
+    - Examination Findings: 主动脉瓣人工机械瓣，开放正常，内侧后瓣环瓣架外似见一裂隙；_x000D_
+其余各瓣膜形态正常；_x000D_
+左心扩大，左室壁增厚，室壁运动正常_x000D_
+未见心包积液；_x000D_
+_x000D__x000D_
+CDFI：二尖瓣返流，彩束面积 2.7cm2；_x000D_
+      主动脉人工机械瓣返流，彩束面积 11.3cm2；（源自瓣周）_x000D_
+      _x000D_
+
+    - Left Ventricular Ejection Fraction: 60.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 43:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 二尖瓣后叶脱垂，部分腱索断裂，重度返流 轻度三尖瓣返流，轻度肺高压
+    - Examination Findings: 二尖瓣后叶冗长，腱索纤细，收缩期P3及部分P2区脱向左房，后叶瓣尖部见纤细条索状回声呈连枷样运动；其余瓣膜形态未见异常； 左房左室轻度扩大，左室下壁及后间隔运动稍弱，余室壁运动正常； 房室间隔连续完整； CDFI：二尖瓣返流，彩束面积 9.0cm2，PISA法测返流口面积0.7cm2，返流容量84ml；        三尖瓣返流，彩束面积 2.1cm2，估测肺动脉收缩压 50mmHg。
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 44:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 胸痛
+    - Examination Notes: 心内结构未见明显异常
+    - Examination Findings: 各房室不大，左室壁运动正常；_x000D_
+各瓣膜形态及活动正常；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：心内未见异常彩色血流信号；_x000D_
+
+    - Left Ventricular Ejection Fraction: 68.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 45:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 心房颤动
+    - Examination Notes: 双房增大_x000D_
+左室舒张功能减退_x000D_
+主动脉瓣退行性变，轻度返流_x000D_
+轻-中度二尖瓣返流_x000D_
+轻度三尖瓣返流
+
+    - Examination Findings: 检查时患者心律不齐；_x000D_
+主动脉瓣局灶性回声增强，开放尚可，关闭欠佳；_x000D_
+双房扩大，室壁运动尚好；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+CDFI：二尖瓣返流，彩束面积 4.4cm2；_x000D_
+      主动脉瓣返流，彩束面积 1.1cm2；_x000D_
+      三尖瓣返流，彩束面积 1.6cm2，估测肺动脉收缩压 30mmHg。
+    - Left Ventricular Ejection Fraction: 67.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 46:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 二尖瓣整形术后，人工腱索断裂，重度返流 轻度三尖瓣返流 轻度肺高压 
+    - Examination Findings: 二尖瓣见整形征象，P3收缩期脱向左房，P3瓣尖部见纤细条索状回声呈连枷样运动； 主动脉瓣形态开放尚可； 左房增大，左室稍大，左室壁运动好； 房室间隔连续完整； 心包腔内未见液性暗区；  CDFI：二尖瓣返流，彩束面积11.2cm2；       三尖瓣返流，彩束面积2.5cm2，估测肺动脉收缩压37mmHg。
+    - Left Ventricular Ejection Fraction: 67.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 47:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 二尖瓣介入治疗术后，后瓣人工腱索断裂，重度偏心返流 轻度三尖瓣返流，中度肺高压
+    - Examination Findings: 二尖瓣介入治疗术后，二尖瓣瓣叶活动尚好，后瓣脱垂，见部分人工腱索断裂，二尖瓣口开放面积正常，二尖瓣峰值压差14mmHg，二尖瓣平均压差5mmHg； 主动脉瓣形态开放尚可；左室壁运动好； 房室间隔连续完整； 未见心包积液；  CDFI：二尖瓣返流，彩束偏心，面积 10cm2（EROA：0.53cm2，MR：77ml）；       三尖瓣返流，彩束面积 4.5cm2，估测肺动脉收缩压 50mmHg。
+    - Left Ventricular Ejection Fraction: 73.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 48:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: 肥厚型心肌病，其他的
+    - Examination Notes: 后间隔基底段增厚，请结合临床_x000D_
+左室舒张功能减低_x000D_
+轻度主动脉瓣返流_x000D_
+轻度三尖瓣返流
+
+    - Examination Findings: 各瓣膜形态正常；
+左房轻度扩大，后间隔基底段增厚达14mm,余室壁不厚，运动尚好；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：收缩期左室流出道可见高速血流，Vmax： 1.0m/s，△P： 4mmHg；_x000D_
+      主动脉瓣返流，彩束面积 1.7cm2；_x000D_
+      三尖瓣返流，彩束面积 2.5cm2，估测肺动脉收缩压 30mmHg。_x000D_
+
+    - Left Ventricular Ejection Fraction: 68.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 49:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 右冠状动脉起源于左冠窦可能，建议冠脉CT进一步检查
+    - Examination Findings: 右冠状动脉开口部及近段小部分较纤细，开口部位显示欠清，似起源于左冠窦，近段壁内行走，左冠状动脉开口于左冠窦；_x000D_
+各房室不大，左室壁运动正常；_x000D_
+各瓣膜形态正常；_x000D_
+房室间隔未见中断，未见PDA征；_x000D_
+心包腔未见液性暗区；_x000D_
+
+CDFI：心内未见异常彩色血流信号。_x000D_
+_x000D_
+
+    - Left Ventricular Ejection Fraction: 64.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+
+Prompt 50:
+You are a highly knowledgeable medical assistant. Based on the patient's echocardiographic data provided below, generate diverse and detailed Visual Question Answering (VQA) pairs.
+
+    Patient Data:
+    - Clinical Diagnosis: nan
+    - Examination Notes: 室间隔缺损堵闭术后未见残余分流 卵圆孔未闭 中度三尖瓣返流 轻度肺高压
+    - Examination Findings: 室间隔见堵闭器回声,；室间隔处未见穿隔彩流； 房间隔原发隔与继发隔分离约4.4mm； 各瓣膜形态正常，各房室不大，室壁搏动正常； 心包腔内未见液性暗区； 下腔静脉内径12.6mm，塌陷率大于50%； 左室舒张末容积48.6ml，左室收缩末容积16.4ml；   CDFI：三尖瓣返流，彩束面积 6.8cm2，估测肺动脉收缩压 36mmHg。
+    - Left Ventricular Ejection Fraction: 66.0%
+
+    Instructions:
+    Generate 10 detailed questions and answers related to this data, focusing on the clinical diagnosis, implications of findings, and echocardiographic observations. Ensure that the questions are diverse and meaningful.
+

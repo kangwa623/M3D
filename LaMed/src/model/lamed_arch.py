@@ -113,9 +113,30 @@ class LamedMetaForCausalLM(ABC):
         return self.get_model().get_vision_tower()
 
     def encode_images(self, images):
-        image_features = self.get_model().get_vision_tower()(images)
-        image_features = self.get_model().mm_projector(image_features)
-        return image_features
+        # Check if images are Multi-Phase (6D: Batch, Phase, C, D, H, W)
+        if images.ndim == 6:
+            batch_size, num_phases, channels, depth, height, width = images.shape
+            all_phase_features = []
+            for i in range(num_phases):
+                # 1. Encode each phase independently
+                single_phase = images[:, i]
+                phase_features = self.get_model().get_vision_tower()(single_phase)
+
+                # 2. Project to LLM dimension
+                phase_features = self.get_model().mm_projector(phase_features)
+                all_phase_features.append(phase_features)
+
+            # 3. Stack phases: (B, P, N_tokens, D_hidden)
+            stacked_features = torch.stack(all_phase_features, dim=1)
+
+            # 4. Take the average across the phase dimension (dim=1)
+            # Resulting shape: (B, N_tokens, D_hidden)
+            image_features = torch.mean(stacked_features, dim=1)
+            return image_features
+        # If 5D (Batch, C, D, H, W), treat as standard M3D single-phase
+        else:
+            image_features = self.get_model().get_vision_tower()(images)
+            return self.get_model().mm_projector(image_features)
 
     def prepare_inputs_for_multimodal(
         self, input_ids, position_ids, attention_mask, past_key_values, labels,

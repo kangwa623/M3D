@@ -2,26 +2,29 @@
 
 # run "accelerate config" first!
 
-PYTHONPATH=. CUDA_VISIBLE_DEVICES=2,5 accelerate launch --config_file deepspeed.yaml LaMed/src/train/train.py \
+
+PYTHONPATH=. CUDA_VISIBLE_DEVICES=2,3,4,5 accelerate launch --config_file deepspeed.yaml LaMed/src/train/train.py \
     --version v0 \
+    --cap_data_path ./Data/m3d_triphasic_dataset.json \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
-    --model_type lamed_phi3 \
+    --model_type phi3 \
+    --lora_enable True \
     --vision_tower vit3d \
     --pretrain_vision_model /nfs/usrhome2/mkfmelbatel/M3D/M3D-CLIP/pretrained_ViT.bin \
-    --tune_mm_mlp_adapter True \
+    --pretrain_mm_mlp_adapter /nfs/usrhome2/mkfmelbatel/M3D/output/TriPhasicLaMed-Phi3-4B-pretrain-0000/mm_projector.bin \
     --bf16 True \
-    --output_dir /nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-pretrain-0000 \
-    --num_train_epochs 3 \
-    --per_device_train_batch_size 2 \
+    --output_dir /nfs/usrhome2/mkfmelbatel/M3D/output/TriPhasicLaMed-Phi3-4B-finetune-0000 \
+    --num_train_epochs 5 \
+    --per_device_train_batch_size 1 \
     --per_device_eval_batch_size 2 \
     --gradient_accumulation_steps 1 \
     --evaluation_strategy "steps" \
     --eval_accumulation_steps 1 \
     --eval_steps 0.04 \
     --save_strategy "steps" \
-    --save_steps 2000 \
+    --save_steps 1000 \
     --save_total_limit 1 \
-    --learning_rate 1e-4 \
+    --learning_rate 5e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \

@@ -1068,10 +1068,10 @@ class UniDatasets(Dataset):
         super(UniDatasets, self).__init__()
         self.ds_list = [
             CapDataset(args, tokenizer, mode),
-            VQADataset(args, tokenizer, close_ended=True, mode=mode),
-            VQADataset(args, tokenizer, close_ended=False, mode=mode),
-            MultiPosDataset(args, tokenizer, mode),
-            MultiSegDataset(args, tokenizer, mode),
+            # VQADataset(args, tokenizer, close_ended=True, mode=mode),
+            # VQADataset(args, tokenizer, close_ended=False, mode=mode),
+            # MultiPosDataset(args, tokenizer, mode),
+            # MultiSegDataset(args, tokenizer, mode),
         ]
         self.dataset = ConcatDataset(self.ds_list)
 

@@ -56,10 +56,10 @@ class ModelArguments:
 
 @dataclass
 class DataArguments:
-    data_root: str = field(default="./Data/data/", metadata={"help": "Root directory for all data."})
+    data_root: str = field(default="/nfs/usrhome2/mkfmelbatel/datasets/trials_report/m3d_npy_v1", metadata={"help": "Root directory for all data."})
 
     # caption data
-    cap_data_path: str = field(default="./Data/data/M3D_Cap_npy/M3D_Cap.json", metadata={"help": "Path to caption data."})
+    cap_data_path: str = field(default="./Data/m3d_dataset_split.json", metadata={"help": "Path to caption data."})
 
     # VQA data
     vqa_data_train_path: str = field(default="./Data/data/M3D-VQA/M3D_VQA_train.csv", metadata={"help": "Path to training VQA data."})
@@ -384,8 +384,8 @@ def main():
     else:
         train_dataset = UniDatasets(data_args, tokenizer, mode='train')
 
-    eval_dataset = CapDataset(data_args, tokenizer, mode='validation')
-    data_collator = DataCollator(data_args.seg_enable)
+    eval_dataset = CapDataset(data_args, tokenizer, mode='val')
+    data_collator = DataCollator(False)
 
     rank0_print("="*20 + " Training " + "="*20)
     trainer = LaMedTrainer(

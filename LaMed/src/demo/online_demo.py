@@ -16,17 +16,7 @@ from LaMed.src.model.language_model import *
 
 def parse_args(args):
     parser = argparse.ArgumentParser(description="M3D-LaMed chat")
-#   edited the line below to avoid errors
-#   parser.add_argument('--model_name_or_path', type=str, default="./LaMed/output/LaMed-Phi3-4B-finetune-0000/hf/", choices=[])
-#   edited the line above for future reference.
-
-    parser.add_argument(
-        '--model_name_or_path',
-        type=str,
-        default="GoodBaiBai88/M3D-LaMed-Llama-2-7B",
-    )
-
-
+    parser.add_argument('--model_name_or_path', type=str, default="./LaMed/output/LaMed-Phi3-4B-finetune-0000/hf/", choices=[])
     parser.add_argument("--vis_save_path", default="./vis_output", type=str)
     parser.add_argument(
         "--precision",
@@ -122,9 +112,6 @@ tokenizer = AutoTokenizer.from_pretrained(
     use_fast=False,
     trust_remote_code=True
 )
-# model = model.to(device=device)
-
-# code to resolve runtime issue
 model = AutoModelForCausalLM.from_pretrained(
     args.model_name_or_path,
     device_map='auto',
@@ -132,11 +119,11 @@ model = AutoModelForCausalLM.from_pretrained(
     trust_remote_code=True,
     **kwargs
 )
+model = model.to(device=device)
 
 model.eval()
 
 # Gradio
-"""
 examples = [
     [
         "/mnt/hpfs/baaidcai/baifan/M3D/Data/data/examples/example_00.npy",
@@ -163,22 +150,6 @@ examples = [
         "Can you find the organs related to the balance of water and salt? Please output the box.",
     ],
 ]
-"""
-
-# examples from ct-rate mini dataset
-examples = [
-    [
-        "datasets/ct-rate-mini/data/images/case_000.nii.gz",
-        "Describe the CT scan findings.",
-    ],
-    [
-        "datasets/ct-rate-mini/data/images/case_001.nii.gz",
-        "What abnormalities are visible?",
-    ],
-]
-
-
-
 
 description = """
 Due to resource limitations, we run the half-precision (bfloat16) M3D-LaMed-Llama2-7B model on NVIDIA RTX 3090 24G for online demo. \n
@@ -221,7 +192,6 @@ def extract_box_from_text(text):
         return None
 
 ## to be implemented
-"""
 def inference(input_image, input_str, temperature, top_p):
     global vis_box
     global seg_mask
@@ -232,39 +202,12 @@ def inference(input_image, input_str, temperature, top_p):
     input_str = bleach.clean(input_str)
 
     print("input_str: ", input_str, "input_image: ", input_image)
-"""
-
-# new code to offset error inthe gradio GUI
-def inference(input_image, input_str, temperature, top_p):
-    global vis_box, seg_mask, image_np, image_rgb
-
-    if input_image is None:
-        raise ValueError("No image provided.")
-
-    # Ensure image is loaded even if change() did not fire
-    if "image_np" not in globals():
-        image_np, _ = image_process(input_image)
-        image_rgb = (np.stack((image_np[0],) * 3, axis=-1) * 255).astype(np.uint8)
-
-    vis_box = [0, 0, 0, 0, 0, 0]
-    seg_mask = np.zeros((32, 256, 256), dtype=np.uint8)
-
-    input_str = bleach.clean(input_str)
-    print("input_str:", input_str, "input_image:", input_image)
-
 
     # Model Inference
     prompt = "<im_patch>" * args.proj_out_num + input_str
 
-    # input_id = tokenizer(prompt, return_tensors="pt")['input_ids'].to(device=device)
-    # image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=device)
-
-    # managing GPU placement
-    model_device = next(model.parameters()).device
-
-    input_id = tokenizer(prompt, return_tensors="pt")["input_ids"].to(model_device)
-    image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=model_device)
-
+    input_id = tokenizer(prompt, return_tensors="pt")['input_ids'].to(device=device)
+    image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=device)
 
     generation, seg_logit = model.generate(image_pt, input_id, seg_enable=args.seg_enable, max_new_tokens=args.max_new_tokens,
                                         do_sample=args.do_sample, top_p=top_p, temperature=temperature)

@@ -1,8 +1,10 @@
 #!/bin/bash
 
 # run "accelerate config" first!
+export CUDA_DEVICE_ORDER=PCI_BUS_ID
 
-PYTHONPATH=. CUDA_VISIBLE_DEVICES=2,5 accelerate launch --config_file deepspeed.yaml LaMed/src/train/train.py \
+PYTHONPATH=. CUDA_VISIBLE_DEVICES=6,7 accelerate launch --main_process_port 29600 --config_file deepspeed.yaml LaMed/src/train/train.py \
+    --cap_data_path ./Data/m3d_triphasic_dataset.json \
     --version v0 \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
     --model_type lamed_phi3 \
@@ -10,7 +12,7 @@ PYTHONPATH=. CUDA_VISIBLE_DEVICES=2,5 accelerate launch --config_file deepspeed.
     --pretrain_vision_model /nfs/usrhome2/mkfmelbatel/M3D/M3D-CLIP/pretrained_ViT.bin \
     --tune_mm_mlp_adapter True \
     --bf16 True \
-    --output_dir /nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-pretrain-0000 \
+    --output_dir /nfs/usrhome2/mkfmelbatel/M3D/output/TriPhasicLaMed-Phi3-4B-pretrain-0000 \
     --num_train_epochs 3 \
     --per_device_train_batch_size 2 \
     --per_device_eval_batch_size 2 \

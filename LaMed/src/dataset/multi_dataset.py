@@ -51,7 +51,7 @@ class ITRDataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
             self.data_list = self.data_list[:512]
         elif 'test' in mode:
@@ -166,7 +166,7 @@ class CapDataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
         elif 'test' in mode:
             self.transform = val_transform
@@ -178,13 +178,27 @@ class CapDataset(Dataset):
         max_attempts = 100
         for _ in range(max_attempts):
             try:
+
                 data = self.data_list[idx]
                 image_path = data["image"]
-                image_abs_path = os.path.join(self.data_root, image_path)
+                # --- START MULTI-PHASE ADAPTATION ---
+                if isinstance(image_path, list):
+                    # Load all 4 phases (NC, Art, Ven, Del)
+                    phase_images = []
+                    for p_path in image_path:
+                        abs_p_path = os.path.join(self.data_root, p_path)
+                        p_img = np.load(abs_p_path)  # Expecting C, D, H, W
+                        p_img = self.transform(p_img)
+                        phase_images.append(p_img)
 
-                image = np.load(image_abs_path)  # nomalized 0-1, C,D,H,W
-                # image = np.load(img_abs_path)[np.newaxis, ...]  # nomalized
-                image = self.transform(image)
+                    # Stack to: (4, C, D, H, W)
+                    image = torch.stack(phase_images, dim=0)
+                else:
+                    # Original single-phase logic
+                    image_abs_path = os.path.join(self.data_root, image_path)
+                    image = np.load(image_abs_path)
+                    image = self.transform(image)
+                # --- END MULTI-PHASE ADAPTATION ---
 
                 text_path = data["text"]
                 text_abs_path = os.path.join(self.data_root, text_path)
@@ -253,7 +267,7 @@ class VQADataset(Dataset):
 
         if mode == "train":
             self.data_list = pd.read_csv(args.vqa_data_train_path)
-        elif mode == "validation":
+        elif mode == "val":
             self.data_list = pd.read_csv(args.vqa_data_val_path, nrows=2048)
         elif "test" in mode:
             self.data_list = pd.read_csv(args.vqa_data_test_path)
@@ -282,7 +296,7 @@ class VQADataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
         elif 'test' in mode:
             self.transform = val_transform
@@ -370,7 +384,7 @@ class VQAYNDataset(Dataset):
 
         if mode == "train":
             self.data_list = pd.read_csv(args.vqa_yn_data_train_path)
-        elif mode == "validation":
+        elif mode == "val":
             self.data_list = pd.read_csv(args.vqa_yn_data_val_path, nrows=2048)
         elif "test" in mode:
             self.data_list = pd.read_csv(args.vqa_yn_data_test_path)
@@ -399,7 +413,7 @@ class VQAYNDataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
         elif 'test' in mode:
             self.transform = val_transform
@@ -491,7 +505,7 @@ class PosRECDataset(Dataset):
                 is_segmentation=True,
                 data_list_key="train",
             )
-        elif mode == "validation":
+        elif mode == "val":
             self.data_list = load_decathlon_datalist(
                 base_dir=root_path,
                 data_list_file_path=os.path.join(root_path, tag, f'{tag}.json'),
@@ -529,7 +543,7 @@ class PosRECDataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
         elif mode == 'test':
             self.transform = val_transform
@@ -664,7 +678,7 @@ class PosREGDataset(Dataset):
                 is_segmentation=True,
                 data_list_key="train",
             )
-        elif mode == "validation":
+        elif mode == "val":
             self.data_list = load_decathlon_datalist(
                 base_dir=root_path,
                 data_list_file_path=os.path.join(root_path, tag, f'{tag}.json'),
@@ -702,7 +716,7 @@ class PosREGDataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
         elif mode == 'test':
             self.transform = val_transform
@@ -840,7 +854,7 @@ class SegDataset(Dataset):
                 is_segmentation=True,
                 data_list_key="train",
             )
-        elif mode == "validation":
+        elif mode == "val":
             self.data_list = load_decathlon_datalist(
                 base_dir=root_path,
                 data_list_file_path=os.path.join(root_path, tag, f'{tag}.json'),
@@ -878,7 +892,7 @@ class SegDataset(Dataset):
 
         if mode == 'train':
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.transform = val_transform
         elif mode == 'test':
             self.transform = val_transform
@@ -1017,7 +1031,7 @@ class RefSegDataset(Dataset):
         if mode == 'train':
             self.data_list = pd.read_csv(args.refseg_data_train_path, engine='python')
             self.transform = train_transform
-        elif mode == 'validation':
+        elif mode == 'val':
             self.data_list = pd.read_csv(args.refseg_data_test_path, engine='python')
             self.transform = val_transform
         elif mode == 'test':
@@ -1164,8 +1178,8 @@ class TextDatasets(Dataset):
         super(TextDatasets, self).__init__()
         self.ds_list = [
             CapDataset(args, tokenizer, mode),
-            VQADataset(args, tokenizer, close_ended=True, mode=mode),
-            VQADataset(args, tokenizer, close_ended=False, mode=mode),
+            # VQADataset(args, tokenizer, close_ended=True, mode=mode),
+            # VQADataset(args, tokenizer, close_ended=False, mode=mode),
         ]
         self.dataset = ConcatDataset(self.ds_list)
 
@@ -1181,10 +1195,10 @@ class UniDatasets(Dataset):
         super(UniDatasets, self).__init__()
         self.ds_list = [
             CapDataset(args, tokenizer, mode),
-            VQADataset(args, tokenizer, close_ended=True, mode=mode),
-            VQADataset(args, tokenizer, close_ended=False, mode=mode),
-            VQAYNDataset(args, tokenizer, mode=mode),
-            MultiPosDataset(args, tokenizer, mode),
+            # VQADataset(args, tokenizer, close_ended=True, mode=mode),
+            # VQADataset(args, tokenizer, close_ended=False, mode=mode),
+            # VQAYNDataset(args, tokenizer, mode=mode),
+            # MultiPosDataset(args, tokenizer, mode),
             # MultiSegDataset(args, tokenizer, mode),
             # MultiSegDataset(args, tokenizer, mode),
         ]

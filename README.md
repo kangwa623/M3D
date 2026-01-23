@@ -1,6 +1,6 @@
 # M3D: Advancing 3D Medical Image Analysis with Multi-Modal Large Language Models
 
-[demo]:https://github.com/BAAI-DCAI/M3D/blob/main/LaMed/src/demo/online_demo.py
+[demo]:https://08778b8abe6ef5b6dd.gradio.live/
 
 <font size=3><div align='center' > <a href=https://arxiv.org/abs/2404.00578>**Paper**</a> | [**Data**](#data) | [**Model**](#model) | [**Training**](#training) | [**Benchmark**](#benchmark) | [**Online Demo**][demo]</div></font>
 M3D is the pioneering and comprehensive series of work on the  multi-modal large language model for 3D medical analysis, including:
@@ -82,7 +82,12 @@ ssv.display(image)
 seg = sikt.GetImageFromArray(seg_mask.cpu().numpy()[0])
 ssv.display(seg)
 ```
-
+conda create -n m3d python=3.9 -y
+pip install -r requirements.txt
+pip install torch==2.2.1+cu118 torchvision==0.17.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+pip install transformers[sentencepiece]==4.42.3
+pip install transformers==4.42.3 accelerate==0.32.1 deepspeed==0.14.4
+export CUDA_DEVICE_ORDER=PCI_BUS_ID
 ## Model
 | Model    | Download Link                                                                                                                                 |
 |----------|-----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -178,7 +183,7 @@ Please update LLM path `--model_name_or_path` and vision encoder path `--pretrai
 Update `--output_dir` to specify the output path of the model.
 Then run the script by:
 ```bash
-sh LaMed/script/pretrain_phi3.sh
+CUDA_VISIBLE_DEVICES=8 sh LaMed/script/pretrain_phi3.sh
 ```
 
 #### Step 2: Visual Instruction Tuning
@@ -219,8 +224,6 @@ after modifying the `file_path`, please run:
 CUDA_VISIBLE_DEVICES="" python Bench/eval/eval_with_llm.py
 ```
 
-## Dataset Copyright Information
-All images and reports involved in this dataset are publicly available data. The M3D-Data have obtained an official license approval from Radiopaedia. We support the non-commercial use of Radiopaedia content for machine learning.
 
 ## Citation
 If our dataset or project are helpful to you, please consider citing:

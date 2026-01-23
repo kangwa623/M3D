@@ -3,21 +3,19 @@
 # run "accelerate config" first!
 
 
-accelerate launch LaMed/src/train/train.py \
+PYTHONPATH=. CUDA_VISIBLE_DEVICES=2,5 accelerate launch --config_file deepspeed.yaml LaMed/src/train/train.py \
     --version v0 \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
     --model_type phi3 \
     --lora_enable True \
     --vision_tower vit3d \
-    --pretrain_vision_model ./LaMed/pretrained_model/M3D-CLIP/pretrained_ViT.bin \
-    --pretrain_mm_mlp_adapter ./LaMed/output/LaMed-Phi3-4B-pretrain-0000/mm_projector.bin \
-    --segmentation_module segvol \
-    --pretrain_seg_module ./LaMed/pretrained_model/SegVol/pytorch_model.bin \
+    --pretrain_vision_model /nfs/usrhome2/mkfmelbatel/M3D/M3D-CLIP/pretrained_ViT.bin \
+    --pretrain_mm_mlp_adapter /nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-pretrain-0000/mm_projector.bin \
     --bf16 True \
-    --output_dir ./LaMed/output/LaMed-Phi3-4B-finetune-0000 \
+    --output_dir /nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-finetune-0000 \
     --num_train_epochs 5 \
-    --per_device_train_batch_size 8 \
-    --per_device_eval_batch_size 4 \
+    --per_device_train_batch_size 2 \
+    --per_device_eval_batch_size 2 \
     --gradient_accumulation_steps 1 \
     --evaluation_strategy "steps" \
     --eval_accumulation_steps 1 \
@@ -33,4 +31,4 @@ accelerate launch LaMed/src/train/train.py \
     --gradient_checkpointing False \
     --dataloader_pin_memory True\
     --dataloader_num_workers 8 \
-    --report_to tensorboard
+    --report_to wandb
