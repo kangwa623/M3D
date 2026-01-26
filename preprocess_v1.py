@@ -10,12 +10,12 @@ from tqdm import tqdm
 # =========================
 # CONFIGURATION (ct-rate-mini)
 # =========================
-BASE_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/data/images"
+BASE_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini"
 
-# Where the raw .nii.gz files live
-NII_DIR = os.path.join(BASE_DIR, "data")
+# Raw NIfTI volumes live here
+NII_DIR = os.path.join(BASE_DIR, "data", "images")
 
-# Where M3D-ready samples will be written
+# Output for M3D-ready samples
 OUTPUT_DIR = os.path.join(BASE_DIR, "m3d_ready")
 
 TARGET_SIZE = (256, 256)
@@ -23,6 +23,9 @@ TARGET_FRAMES = 32
 TARGET_SPACING = (1.5, 0.75, 0.75)  # (Z, X, Y) in mm
 HU_MIN, HU_MAX = -150, 200
 NUM_WORKERS = 4
+
+print("Using NII_DIR:", NII_DIR)
+print("Writing to OUTPUT_DIR:", OUTPUT_DIR)
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
@@ -46,14 +49,13 @@ def resize_array(array, current_spacing, target_spacing):
 
 def process_single_file(filename):
     try:
-        # For mini dataset, treat everything as venous
         phase_part = "venous"
         p_id_str = os.path.splitext(os.path.splitext(filename)[0])[0]
 
         patient_folder = os.path.join(OUTPUT_DIR, p_id_str)
         os.makedirs(patient_folder, exist_ok=True)
 
-        # Create required text file
+        # Required text file
         txt_path = os.path.join(patient_folder, f"{p_id_str}.txt")
         if not os.path.exists(txt_path):
             with open(txt_path, "w") as f:
@@ -66,7 +68,7 @@ def process_single_file(filename):
         zooms = img.header.get_zooms()
         current_spacing = (zooms[2], zooms[1], zooms[0])
 
-        # Reorder to (D, H, W)
+        # (D, H, W)
         data = data.transpose(2, 1, 0)
 
         # Window + normalize
@@ -100,6 +102,9 @@ def process_single_file(filename):
 
 
 if __name__ == "__main__":
+    if not os.path.isdir(NII_DIR):
+        raise RuntimeError(f"NII_DIR does not exist: {NII_DIR}")
+
     all_files = [f for f in os.listdir(NII_DIR) if f.endswith(".nii.gz")]
     print(f"Processing {len(all_files)} files using {NUM_WORKERS} processes...")
 
