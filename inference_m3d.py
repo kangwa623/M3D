@@ -7,14 +7,16 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
 # --- Configuration ---
-# Local path to your fine-tuned or HF-style model
-model_path = "/home/africanstu/kangwa/m3d/M3D/LaMed"  # or a valid HF model dir
+# Local path to your fine-tuned HF-style model (must contain config.json, tokenizer, weights)
+model_path = "/nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-finetune-0000"
+
 # Base directory where your .npy and .txt files are stored
 base_data_dir = "/home/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/m3d_npy"
+
 # Output directory
 output_base = "M3D_phi3_pred"
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
 proj_out_num = 256
 question = "Can you provide a caption consists of findings for this medical image?"
@@ -30,7 +32,7 @@ print(f"Loading model from {model_path}...")
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
     torch_dtype=dtype,
-    device_map='auto',
+    device_map="auto",
     trust_remote_code=True
 )
 tokenizer = AutoTokenizer.from_pretrained(
@@ -41,6 +43,7 @@ tokenizer = AutoTokenizer.from_pretrained(
     trust_remote_code=True
 )
 model.to(device=device)
+model.eval()
 
 # --- Enumerate Dataset (ct-rate-mini style) ---
 cases = []
@@ -71,7 +74,7 @@ for patient_id, abs_image_path, abs_text_path in tqdm(cases):
     # 2. Prepare Input Text
     image_tokens = "<im_patch>" * proj_out_num
     input_txt = image_tokens + question
-    input_ids = tokenizer(input_txt, return_tensors="pt")['input_ids'].to(device=device)
+    input_ids = tokenizer(input_txt, return_tensors="pt")["input_ids"].to(device=device)
 
     # 3. Generate Prediction
     with torch.no_grad():
@@ -88,7 +91,7 @@ for patient_id, abs_image_path, abs_text_path in tqdm(cases):
     final_pred = generated_text.replace(question, "").strip()
 
     # 4. Save Prediction
-    with open(os.path.join(pred_dir, output_filename), 'w', encoding='utf-8') as f_pred:
+    with open(os.path.join(pred_dir, output_filename), "w", encoding="utf-8") as f_pred:
         f_pred.write(final_pred)
 
     # 5. Copy Ground Truth
