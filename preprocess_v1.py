@@ -11,11 +11,11 @@ from scipy.ndimage import zoom
 from multiprocessing import Pool
 from tqdm import tqdm
 
-# --- CONFIGURATION (your real folders) ---
-NII_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/data/images"
-CSV_PATH = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/meta.csv"
-JSON_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/reports"
-OUTPUT_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/m3d_npy"
+# --- CONFIGURATION ---
+NII_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/datasets/ct-rate-mini/data/images"
+CSV_PATH = "/nfs/usrhome2/africanstu/kangwa/m3d/datasets/ct-rate-mini/meta.csv"
+JSON_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/datasets/ct-rate-mini/reports"
+OUTPUT_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/datasets/ct-rate-mini/m3d_npy"
 
 # Processing Settings
 TARGET_SIZE = (256, 256)
