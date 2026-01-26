@@ -10,10 +10,10 @@ from tqdm import tqdm
 # =========================
 # CONFIGURATION (ct-rate-mini)
 # =========================
-BASE_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini"
+BASE_DIR = "/nfs/usrhome2/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/data/images"
 
 # Where the raw .nii.gz files live
-NII_DIR = os.path.join(BASE_DIR, "data", "images")
+NII_DIR = os.path.join(BASE_DIR, "data")
 
 # Where M3D-ready samples will be written
 OUTPUT_DIR = os.path.join(BASE_DIR, "m3d_ready")
