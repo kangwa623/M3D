@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 # --- Configuration ---
 # Local path to your fine-tuned HF-style model (must contain config.json, tokenizer, weights)
-model_path = "/nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-finetune-0000"
+model_path = "/home/africanstu/kangwa/m3d/M3D/output/LaMed-Phi3-4B-finetune-0000"
 
 # Base directory where your .npy and .txt files are stored
 base_data_dir = "/home/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/m3d_npy"
