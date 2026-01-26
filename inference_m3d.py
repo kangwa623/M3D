@@ -7,17 +7,15 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
 # --- Configuration ---
-# Local path to your fine-tuned model
-model_path = "/nfs/usrhome2/mkfmelbatel/M3D/output/LaMed-Phi3-4B-finetune-0000"
-# Path to your dataset split JSON
-json_path = "./Data/m3d_dataset_split.json"
+# Local path to your fine-tuned or HF-style model
+model_path = "/home/africanstu/kangwa/m3d/M3D/LaMed"  # or a valid HF model dir
 # Base directory where your .npy and .txt files are stored
-base_data_dir = "/nfs/usrhome2/mkfmelbatel/datasets/trials_report/m3d_npy_v1"
+base_data_dir = "/home/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/m3d_npy"
 # Output directory
 output_base = "M3D_phi3_pred"
 
-device = torch.device('cuda')
-dtype = torch.bfloat16
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
 proj_out_num = 256
 question = "Can you provide a caption consists of findings for this medical image?"
 
@@ -44,30 +42,22 @@ tokenizer = AutoTokenizer.from_pretrained(
 )
 model.to(device=device)
 
-# --- Load Dataset Split ---
-with open(json_path, 'r') as f:
-    dataset = json.load(f)
+# --- Enumerate Dataset (ct-rate-mini style) ---
+cases = []
+for d in sorted(os.listdir(base_data_dir)):
+    case_dir = os.path.join(base_data_dir, d)
+    if not os.path.isdir(case_dir):
+        continue
+    img = os.path.join(case_dir, "venous.npy")
+    txt = os.path.join(case_dir, f"{d}.txt")
+    if os.path.exists(img) and os.path.exists(txt):
+        cases.append((d, img, txt))
 
-# Use the 'test' split from the JSON
-test_samples = dataset.get('test', [])
-if not test_samples:
-    print("Warning: No 'test' split found in JSON. Checking 'val' as fallback...")
-    test_samples = dataset.get('val', [])
+print(f"Starting inference on {len(cases)} samples...")
 
 # --- Batch Inference Loop ---
-print(f"Starting inference on {len(test_samples)} samples...")
+for patient_id, abs_image_path, abs_text_path in tqdm(cases):
 
-for sample in tqdm(test_samples):
-    # Paths from JSON
-    rel_image_path = sample['image']  # e.g., "890/venous.npy"
-    rel_text_path = sample['text']  # e.g., "890/890.txt"
-
-    # Absolute paths
-    abs_image_path = os.path.join(base_data_dir, rel_image_path)
-    abs_text_path = os.path.join(base_data_dir, rel_text_path)
-
-    # Use the patient ID (folder name) as the filename for the output
-    patient_id = rel_text_path.split('/')[0]
     output_filename = f"{patient_id}.txt"
 
     # 1. Load and Preprocess Image
@@ -95,7 +85,6 @@ for sample in tqdm(test_samples):
         )
 
     generated_text = tokenizer.batch_decode(generation, skip_special_tokens=True)[0]
-    # Remove the question/prompt from the output if it's included
     final_pred = generated_text.replace(question, "").strip()
 
     # 4. Save Prediction
