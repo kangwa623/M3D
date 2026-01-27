@@ -1,5 +1,4 @@
 import os
-import json
 import shutil
 import numpy as np
 import torch
@@ -7,7 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
 # --- Configuration ---
-# Local path to your fine-tuned HF-style model (must contain config.json, tokenizer, weights)
+# Use the LaMed Phi-3 4B multimodal model from Hugging Face
 model_path = "GoodBaiBai88/M3D-LaMed-Phi-3-4B"
 
 # Base directory where your .npy and .txt files are stored
@@ -16,7 +15,6 @@ base_data_dir = "/home/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/m3d_npy"
 # Output directory
 output_base = "M3D_phi3_pred"
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 dtype = torch.bfloat16 if torch.cuda.is_available() else torch.float32
 proj_out_num = 256
 question = "Can you provide a caption consists of findings for this medical image?"
@@ -32,9 +30,10 @@ print(f"Loading model from {model_path}...")
 model = AutoModelForCausalLM.from_pretrained(
     model_path,
     torch_dtype=dtype,
-    device_map="auto",
+    device_map="auto",          # allow HF/Accelerate to shard across GPUs
     trust_remote_code=True
 )
+
 tokenizer = AutoTokenizer.from_pretrained(
     model_path,
     model_max_length=512,
@@ -42,7 +41,7 @@ tokenizer = AutoTokenizer.from_pretrained(
     use_fast=False,
     trust_remote_code=True
 )
-model.to(device=device)
+
 model.eval()
 
 # --- Enumerate Dataset (ct-rate-mini style) ---
@@ -51,8 +50,16 @@ for d in sorted(os.listdir(base_data_dir)):
     case_dir = os.path.join(base_data_dir, d)
     if not os.path.isdir(case_dir):
         continue
+
     img = os.path.join(case_dir, "venous.npy")
-    txt = os.path.join(case_dir, f"{d}.txt")
+
+    # find the single .txt file inside the folder
+    txt_files = [f for f in os.listdir(case_dir) if f.endswith(".txt")]
+    if not txt_files:
+        continue
+
+    txt = os.path.join(case_dir, txt_files[0])
+
     if os.path.exists(img) and os.path.exists(txt):
         cases.append((d, img, txt))
 
@@ -66,7 +73,8 @@ for patient_id, abs_image_path, abs_text_path in tqdm(cases):
     # 1. Load and Preprocess Image
     try:
         image_np = np.load(abs_image_path)
-        image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype, device=device)
+        # IMPORTANT: do NOT move to a fixed GPU when using device_map="auto"
+        image_pt = torch.from_numpy(image_np).unsqueeze(0).to(dtype=dtype)
     except Exception as e:
         print(f"Error loading image {abs_image_path}: {e}")
         continue
@@ -74,7 +82,7 @@ for patient_id, abs_image_path, abs_text_path in tqdm(cases):
     # 2. Prepare Input Text
     image_tokens = "<im_patch>" * proj_out_num
     input_txt = image_tokens + question
-    input_ids = tokenizer(input_txt, return_tensors="pt")["input_ids"].to(device=device)
+    input_ids = tokenizer(input_txt, return_tensors="pt")["input_ids"]
 
     # 3. Generate Prediction
     with torch.no_grad():
