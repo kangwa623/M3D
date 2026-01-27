@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 # --- Configuration ---
 # Local path to your fine-tuned HF-style model (must contain config.json, tokenizer, weights)
-model_path = "microsoft/Phi-3-mini-4k-instruct"
+model_path = "GoodBaiBai88/M3D-LaMed-Phi-3-4B"
 
 # Base directory where your .npy and .txt files are stored
 base_data_dir = "/home/africanstu/kangwa/m3d/M3D/datasets/ct-rate-mini/m3d_npy"
@@ -51,16 +51,8 @@ for d in sorted(os.listdir(base_data_dir)):
     case_dir = os.path.join(base_data_dir, d)
     if not os.path.isdir(case_dir):
         continue
-
     img = os.path.join(case_dir, "venous.npy")
-
-    # find the single .txt file inside the folder
-    txt_files = [f for f in os.listdir(case_dir) if f.endswith(".txt")]
-    if not txt_files:
-        continue
-
-    txt = os.path.join(case_dir, txt_files[0])
-
+    txt = os.path.join(case_dir, f"{d}.txt")
     if os.path.exists(img) and os.path.exists(txt):
         cases.append((d, img, txt))
 
