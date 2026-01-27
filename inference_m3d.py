@@ -51,8 +51,16 @@ for d in sorted(os.listdir(base_data_dir)):
     case_dir = os.path.join(base_data_dir, d)
     if not os.path.isdir(case_dir):
         continue
+
     img = os.path.join(case_dir, "venous.npy")
-    txt = os.path.join(case_dir, f"{d}.txt")
+
+    # find the single .txt file inside the folder
+    txt_files = [f for f in os.listdir(case_dir) if f.endswith(".txt")]
+    if not txt_files:
+        continue
+
+    txt = os.path.join(case_dir, txt_files[0])
+
     if os.path.exists(img) and os.path.exists(txt):
         cases.append((d, img, txt))
 
