@@ -1,5 +1,5 @@
 import os
-from nltk.translate.bleu_score import corpus_bleu
+from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 from nltk.translate.meteor_score import meteor_score
 from rouge_score import rouge_scorer
 
@@ -41,22 +41,26 @@ def main():
         print("No paired prediction/ground-truth files found.")
         return
 
-    # BLEU scores
-    b1 = corpus_bleu(gt_tokens, pred_tokens, weights=(1, 0, 0, 0))
-    b2 = corpus_bleu(gt_tokens, pred_tokens, weights=(0.5, 0.5, 0, 0))
-    b3 = corpus_bleu(gt_tokens, pred_tokens, weights=(1/3, 1/3, 1/3, 0))
-    b4 = corpus_bleu(gt_tokens, pred_tokens)
+    smooth = SmoothingFunction().method1
+
+    # BLEU
+    b1 = corpus_bleu(gt_tokens, pred_tokens, weights=(1, 0, 0, 0), smoothing_function=smooth)
+    b2 = corpus_bleu(gt_tokens, pred_tokens, weights=(0.5, 0.5, 0, 0), smoothing_function=smooth)
+    b3 = corpus_bleu(gt_tokens, pred_tokens, weights=(1/3, 1/3, 1/3, 0), smoothing_function=smooth)
+    b4 = corpus_bleu(gt_tokens, pred_tokens, smoothing_function=smooth)
     b_mean = (b1 + b2 + b3 + b4) / 4
 
-    # METEOR
+    # METEOR (tokenized)
     meteor = sum(
-        meteor_score([g], p) for g, p in zip(gt_texts, pred_texts)
+        meteor_score([g.split()], p.split())
+        for g, p in zip(gt_texts, pred_texts)
     ) / paired
 
     # ROUGE-L
     scorer = rouge_scorer.RougeScorer(["rougeL"], use_stemmer=True)
     rougeL = sum(
-        scorer.score(g, p)["rougeL"].fmeasure for g, p in zip(gt_texts, pred_texts)
+        scorer.score(g, p)["rougeL"].fmeasure
+        for g, p in zip(gt_texts, pred_texts)
     ) / paired
 
     print(f"Evaluated on {paired} samples\n")
