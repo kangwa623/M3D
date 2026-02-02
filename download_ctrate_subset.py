@@ -8,7 +8,7 @@ import nibabel as nib
 from tqdm import tqdm
 
 # how many samples you want
-N_SAMPLES = 120   # you said ~100, so take extra in case some fail
+N_SAMPLES = 150   # you said ~100, so take extra in case some fail
 
 SAVE_IMG_DIR = "ctrate_volumes"
 SAVE_TXT_DIR = "ctrate_reports"
