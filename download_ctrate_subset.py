@@ -1,7 +1,7 @@
 import os
 import shutil
 from datasets import load_dataset
-from huggingface_hub import hf_hub_download
+from huggingface_hub import hf_hub_download, list_repo_files
 from tqdm import tqdm
 
 # --- CONFIGURATION ---
@@ -17,35 +17,85 @@ os.makedirs(SAVE_TRAIN_TXT_DIR, exist_ok=True)
 os.makedirs(SAVE_TEST_IMG_DIR, exist_ok=True)
 os.makedirs(SAVE_TEST_TXT_DIR, exist_ok=True)
 
-# Comprehensive path options to try (based on common CT-RATE structures)
-TRAIN_PATHS = [
-    "dataset/train_fixed",
-    "dataset/train",
-    "train_fixed",
-    "train",
-    "volumes/train_fixed",
-    "volumes/train",
-    "data/train_fixed",
-    "data/train"
-]
+# ============================================================================
+# STEP 1: Explore repository structure to find actual file locations
+# ============================================================================
+print("=" * 80)
+print("STEP 1: Exploring repository structure...")
+print("=" * 80)
 
-TEST_PATHS = [
-    "dataset/test_fixed",
-    "dataset/valid_fixed",
-    "dataset/test",
-    "dataset/validation",
-    "test_fixed",
-    "valid_fixed",
-    "test",
-    "validation",
-    "volumes/test_fixed",
-    "volumes/valid_fixed",
-    "data/test_fixed",
-    "data/valid_fixed"
-]
+def explore_repo_structure():
+    """List files in the repository to understand the structure."""
+    print("Listing repository files (this may take a moment)...")
+    try:
+        files = list(list_repo_files(
+            repo_id="ibrahimhamamci/CT-RATE",
+            repo_type="dataset"
+        ))
+        
+        # Filter for .nii.gz files and group by directory
+        nii_files = [f for f in files if f.endswith('.nii.gz')]
+        directories = {}
+        for f in nii_files[:100]:  # Sample first 100 to understand structure
+            parts = f.split('/')
+            if len(parts) > 1:
+                dir_name = '/'.join(parts[:-1])
+                if dir_name not in directories:
+                    directories[dir_name] = []
+                directories[dir_name].append(parts[-1])
+        
+        print(f"\nFound {len(nii_files)} .nii.gz files in repository")
+        print(f"Sample directories found:")
+        for dir_name, file_list in list(directories.items())[:5]:
+            print(f"  {dir_name}: {len(file_list)} files (e.g., {file_list[0]})")
+        
+        return directories, nii_files
+    except Exception as e:
+        print(f"Could not list repository files: {e}")
+        print("Will proceed with standard path attempts...")
+        return None, None
+
+repo_dirs, all_nii_files = explore_repo_structure()
+
+# Build path options based on what we found
+if repo_dirs:
+    # Use discovered directories
+    TRAIN_PATHS = list(repo_dirs.keys())[:10]  # Try top 10 discovered paths
+    TEST_PATHS = list(repo_dirs.keys())[:10]
+    print(f"\nUsing discovered paths for download attempts")
+else:
+    # Fallback to standard paths
+    TRAIN_PATHS = [
+        "dataset/train_fixed",
+        "dataset/train",
+        "train_fixed",
+        "train",
+        "volumes/train_fixed",
+        "volumes/train"
+    ]
+    TEST_PATHS = [
+        "dataset/test_fixed",
+        "dataset/valid_fixed",
+        "dataset/test",
+        "dataset/validation",
+        "test_fixed",
+        "valid_fixed",
+        "volumes/test_fixed",
+        "volumes/valid_fixed"
+    ]
+
+# Create a set of available files for quick lookup
+available_files = set()
+if all_nii_files:
+    available_files = {f.split('/')[-1] for f in all_nii_files}  # Just filenames
+    print(f"Created lookup set with {len(available_files)} available files")
 
 def find_file_path(repo_id, volume_name, path_options, repo_type="dataset"):
     """Try multiple path options to find the file."""
+    # Quick check: if we have a lookup set, check if file exists first
+    if available_files and volume_name not in available_files:
+        return None, None
+    
     for path_option in path_options:
         try:
             full_path = f"{path_option}/{volume_name}"
@@ -55,22 +105,21 @@ def find_file_path(repo_id, volume_name, path_options, repo_type="dataset"):
                 repo_type=repo_type
             )
             return cached_file, full_path
-        except Exception:
+        except Exception as e:
             continue  # Try next path
     return None, None
 
 # ============================================================================
 # PART 1: Download 150 samples from training set
 # ============================================================================
-print("=" * 80)
-print("PART 1: Downloading 150 samples from TRAINING set")
+print("\n" + "=" * 80)
+print("PART 2: Downloading 150 samples from TRAINING set")
 print("=" * 80)
 
 print("Loading CT-RATE training metadata...")
 ds_train = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train", streaming=True)
 
 print(f"Downloading up to {N_TRAIN_SAMPLES} training .nii.gz files...")
-print("Note: Will continue processing until {N_TRAIN_SAMPLES} files are found or dataset is exhausted.")
 
 train_count = 0
 train_failed = []
@@ -110,14 +159,13 @@ for item in tqdm(ds_train, desc="Training samples"):
                 print(f"\n⚠ Processed {total_processed} samples, found {train_count} files, skipped {skipped_count} missing files")
             continue
         
-        # Track which path worked and prioritize it
+        # Track which path worked
         if train_success_path is None:
             train_success_path = used_path.rsplit('/', 1)[0]
             print(f"\n✓ Found working path: {train_success_path}")
-            # Move working path to front of list for faster future downloads
-            if train_success_path in TRAIN_PATHS:
-                TRAIN_PATHS.remove(train_success_path)
-            TRAIN_PATHS.insert(0, train_success_path)
+            # Update path list to prioritize this path
+            if train_success_path not in TRAIN_PATHS:
+                TRAIN_PATHS.insert(0, train_success_path)
         
         # 3. Copy the .nii.gz file to your folder
         img_path = os.path.join(SAVE_TRAIN_IMG_DIR, volume_name)
@@ -132,7 +180,7 @@ for item in tqdm(ds_train, desc="Training samples"):
 
 print(f"\n✓ Successfully downloaded {train_count} training samples!")
 print(f"  Processed {total_processed} total samples from metadata")
-print(f"  Success rate: {train_count/total_processed*100:.1f}%")
+print(f"  Skipped {len(train_failed)} files that don't exist in repository")
 print(f"  Images saved to: {SAVE_TRAIN_IMG_DIR}")
 print(f"  Reports saved to: {SAVE_TRAIN_TXT_DIR}")
 
@@ -140,7 +188,7 @@ print(f"  Reports saved to: {SAVE_TRAIN_TXT_DIR}")
 # PART 2: Download full test set
 # ============================================================================
 print("\n" + "=" * 80)
-print("PART 2: Downloading FULL TEST set")
+print("PART 3: Downloading FULL TEST set")
 print("=" * 80)
 
 print("Loading CT-RATE test metadata...")
@@ -209,9 +257,8 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
         if test_success_path is None:
             test_success_path = used_path.rsplit('/', 1)[0]
             print(f"\n✓ Found working path: {test_success_path}")
-            if test_success_path in TEST_PATHS:
-                TEST_PATHS.remove(test_success_path)
-            TEST_PATHS.insert(0, test_success_path)
+            if test_success_path not in TEST_PATHS:
+                TEST_PATHS.insert(0, test_success_path)
         
         # 3. Copy the file
         img_path = os.path.join(SAVE_TEST_IMG_DIR, volume_name)
@@ -236,16 +283,11 @@ print("DOWNLOAD SUMMARY")
 print("=" * 80)
 print(f"Training samples: {train_count} downloaded (requested: {N_TRAIN_SAMPLES})")
 print(f"  Processed {total_processed} samples from metadata")
-if total_processed > 0:
-    print(f"  Success rate: {train_count/total_processed*100:.1f}%")
+print(f"  Success rate: {train_count/total_processed*100:.1f}%")
+if train_failed and len(train_failed) <= 20:
+    print(f"  Example skipped: {', '.join(train_failed[:3])}...")
 print(f"\nTest samples: {test_count}/{test_total} downloaded")
-if train_success_path:
-    print(f"\nWorking paths found:")
+if test_success_path:
+    print(f"\nWorking paths:")
     print(f"  Training: {train_success_path}")
-    if test_success_path:
-        print(f"  Test: {test_success_path}")
-print(f"\nDirectory structure:")
-print(f"  Training images: {SAVE_TRAIN_IMG_DIR}")
-print(f"  Training reports: {SAVE_TRAIN_TXT_DIR}")
-print(f"  Test images: {SAVE_TEST_IMG_DIR}")
-print(f"  Test reports: {SAVE_TEST_TXT_DIR}")
+    print(f"  Test: {test_success_path}")
