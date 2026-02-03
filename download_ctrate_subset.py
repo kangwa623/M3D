@@ -13,7 +13,7 @@ os.makedirs(SAVE_IMG_DIR, exist_ok=True)
 os.makedirs(SAVE_TXT_DIR, exist_ok=True)
 
 print("Loading CT-RATE reports (Streaming mode)...")
-# Automatically uses your local logged-in token
+# Automatically uses your successful CLI login credentials
 ds = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train", streaming=True)
 
 print(f"Downloading {N_SAMPLES} samples...")
@@ -31,18 +31,20 @@ for count, item in enumerate(tqdm(ds, total=N_SAMPLES)):
         with open(txt_path, "w", encoding="utf-8") as f:
             f.write(report_text)
 
-        # 2. Securely Download the Volume
-        # This function looks at your CLI login and handles the '401' automatically
+        # 2. Securely Download the Volume 
+        # Note: Volumes in CT-RATE v2 are under 'dataset/train_fixed/' or 'dataset/train/'
+        # Based on repo structure, we check the most common path:
         downloaded_file = hf_hub_download(
             repo_id="ibrahimhamamci/CT-RATE",
             filename=f"dataset/train/{volume_name}",
             repo_type="dataset"
         )
         
-        # Move it from the cache to your local folder
+        # Copy from HF cache to your local folder
         shutil.copy(downloaded_file, os.path.join(SAVE_IMG_DIR, volume_name))
 
     except Exception as e:
-        print(f"\n[!] Error on sample {count}: {e}")
+        print(f"\n[!] Error downloading {volume_name}: {e}")
+        continue
 
-print(f"\nSuccess! 150 samples saved to {SAVE_IMG_DIR}")
+print(f"\nDownload complete! Files saved in {SAVE_IMG_DIR}")
