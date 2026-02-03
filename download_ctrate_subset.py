@@ -1,7 +1,7 @@
 import os
 import shutil
 from datasets import load_dataset
-from huggingface_hub import hf_hub_download
+from huggingface_hub import hf_hub_download, list_repo_files
 from tqdm import tqdm
 
 # --- CONFIGURATION ---
@@ -17,6 +17,40 @@ os.makedirs(SAVE_TRAIN_TXT_DIR, exist_ok=True)
 os.makedirs(SAVE_TEST_IMG_DIR, exist_ok=True)
 os.makedirs(SAVE_TEST_TXT_DIR, exist_ok=True)
 
+# Alternative paths to try (in order of preference)
+TRAIN_PATHS = [
+    "dataset/train_fixed",
+    "dataset/train",
+    "train_fixed",
+    "train"
+]
+
+TEST_PATHS = [
+    "dataset/test_fixed",
+    "dataset/valid_fixed",
+    "dataset/test",
+    "dataset/validation",
+    "test_fixed",
+    "valid_fixed",
+    "test",
+    "validation"
+]
+
+def find_file_path(repo_id, volume_name, path_options, repo_type="dataset"):
+    """Try multiple path options to find the file."""
+    for path_option in path_options:
+        try:
+            full_path = f"{path_option}/{volume_name}"
+            cached_file = hf_hub_download(
+                repo_id=repo_id,
+                filename=full_path,
+                repo_type=repo_type
+            )
+            return cached_file, full_path
+        except Exception as e:
+            continue  # Try next path
+    return None, None
+
 # ============================================================================
 # PART 1: Download 150 samples from training set
 # ============================================================================
@@ -25,12 +59,14 @@ print("PART 1: Downloading 150 samples from TRAINING set")
 print("=" * 80)
 
 print("Loading CT-RATE training metadata...")
-# Load the 'reports' config to get the mapping of VolumeNames for training set
 ds_train = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train", streaming=True)
 
 print(f"Downloading {N_TRAIN_SAMPLES} training .nii.gz files...")
 
 train_count = 0
+train_failed = []
+train_success_path = None  # Track which path worked
+
 for item in tqdm(ds_train, desc="Training samples"):
     if train_count >= N_TRAIN_SAMPLES:
         break
@@ -46,12 +82,22 @@ for item in tqdm(ds_train, desc="Training samples"):
         with open(txt_path, "w", encoding="utf-8") as f:
             f.write(report_content)
 
-        # 2. Download the actual .nii.gz Volume from train_fixed
-        cached_file = hf_hub_download(
-            repo_id="ibrahimhamamci/CT-RATE",
-            filename=f"dataset/train_fixed/{volume_name}", 
-            repo_type="dataset"
+        # 2. Try to download the .nii.gz file with multiple path options
+        cached_file, used_path = find_file_path(
+            "ibrahimhamamci/CT-RATE",
+            volume_name,
+            TRAIN_PATHS
         )
+        
+        if cached_file is None:
+            train_failed.append(volume_name)
+            print(f"\n⚠ Could not find {volume_name} in any of the tried paths")
+            continue
+        
+        # Track which path worked (for future downloads)
+        if train_success_path is None:
+            train_success_path = used_path.rsplit('/', 1)[0]  # Get directory path
+            print(f"\n✓ Found working path: {train_success_path}")
         
         # 3. Copy the .nii.gz file to your folder
         img_path = os.path.join(SAVE_TRAIN_IMG_DIR, volume_name)
@@ -61,9 +107,12 @@ for item in tqdm(ds_train, desc="Training samples"):
 
     except Exception as e:
         print(f"\nError downloading training sample {volume_name}: {e}")
+        train_failed.append(volume_name)
         continue
 
-print(f"\n✓ Successfully downloaded {train_count} training samples!")
+print(f"\n✓ Successfully downloaded {train_count}/{N_TRAIN_SAMPLES} training samples!")
+if train_failed:
+    print(f"⚠ Failed to download {len(train_failed)} training samples")
 print(f"  Images saved to: {SAVE_TRAIN_IMG_DIR}")
 print(f"  Reports saved to: {SAVE_TRAIN_TXT_DIR}")
 
@@ -76,29 +125,26 @@ print("=" * 80)
 
 print("Loading CT-RATE test metadata...")
 # Load the test split - try 'test' first, if not available try 'validation' or 'valid'
+test_split_name = None
 try:
     ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="test", streaming=True)
     test_split_name = "test"
-    dataset_path = "dataset/test_fixed"
 except Exception as e1:
     try:
         ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="validation", streaming=True)
         test_split_name = "validation"
-        dataset_path = "dataset/valid_fixed"
     except Exception as e2:
         try:
             ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="valid", streaming=True)
             test_split_name = "valid"
-            dataset_path = "dataset/valid_fixed"
         except Exception as e3:
             print(f"Error: Could not find test/validation split. Tried 'test', 'validation', and 'valid'.")
             print(f"Errors: {e1}, {e2}, {e3}")
             raise
 
-print(f"Using split: '{test_split_name}' with dataset path: '{dataset_path}'")
+print(f"Using split: '{test_split_name}'")
 
 # First, we need to get the total count for progress bar
-# Since streaming=True, we'll count as we go
 print("Counting test samples (this may take a moment)...")
 test_items = []
 for item in ds_test:
@@ -111,6 +157,9 @@ print(f"Found {test_total} test samples. Downloading all test .nii.gz files...")
 ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split=test_split_name, streaming=True)
 
 test_count = 0
+test_failed = []
+test_success_path = None
+
 for item in tqdm(ds_test, total=test_total, desc="Test samples"):
     try:
         volume_name = item["VolumeName"]  # This could be 'test_X.nii.gz' or similar
@@ -123,12 +172,22 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
         with open(txt_path, "w", encoding="utf-8") as f:
             f.write(report_content)
 
-        # 2. Download the actual .nii.gz Volume from test_fixed or valid_fixed
-        cached_file = hf_hub_download(
-            repo_id="ibrahimhamamci/CT-RATE",
-            filename=f"{dataset_path}/{volume_name}", 
-            repo_type="dataset"
+        # 2. Try to download the .nii.gz file with multiple path options
+        cached_file, used_path = find_file_path(
+            "ibrahimhamamci/CT-RATE",
+            volume_name,
+            TEST_PATHS
         )
+        
+        if cached_file is None:
+            test_failed.append(volume_name)
+            print(f"\n⚠ Could not find {volume_name} in any of the tried paths")
+            continue
+        
+        # Track which path worked
+        if test_success_path is None:
+            test_success_path = used_path.rsplit('/', 1)[0]
+            print(f"\n✓ Found working path: {test_success_path}")
         
         # 3. Copy the .nii.gz file to your folder
         img_path = os.path.join(SAVE_TEST_IMG_DIR, volume_name)
@@ -138,9 +197,12 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
 
     except Exception as e:
         print(f"\nError downloading test sample {volume_name}: {e}")
+        test_failed.append(volume_name)
         continue
 
-print(f"\n✓ Successfully downloaded {test_count} test samples!")
+print(f"\n✓ Successfully downloaded {test_count}/{test_total} test samples!")
+if test_failed:
+    print(f"⚠ Failed to download {len(test_failed)} test samples")
 print(f"  Images saved to: {SAVE_TEST_IMG_DIR}")
 print(f"  Reports saved to: {SAVE_TEST_TXT_DIR}")
 
@@ -151,8 +213,20 @@ print("\n" + "=" * 80)
 print("DOWNLOAD SUMMARY")
 print("=" * 80)
 print(f"Training samples: {train_count}/{N_TRAIN_SAMPLES}")
+if train_failed:
+    print(f"  Failed training samples: {len(train_failed)}")
+    if len(train_failed) <= 10:
+        print(f"  Failed files: {', '.join(train_failed)}")
 print(f"Test samples: {test_count}/{test_total}")
-print(f"\nAll files downloaded successfully!")
+if test_failed:
+    print(f"  Failed test samples: {len(test_failed)}")
+    if len(test_failed) <= 10:
+        print(f"  Failed files: {', '.join(test_failed[:10])}...")
+print(f"\nWorking paths found:")
+if train_success_path:
+    print(f"  Training: {train_success_path}")
+if test_success_path:
+    print(f"  Test: {test_success_path}")
 print(f"\nDirectory structure:")
 print(f"  Training images: {SAVE_TRAIN_IMG_DIR}")
 print(f"  Training reports: {SAVE_TRAIN_TXT_DIR}")
