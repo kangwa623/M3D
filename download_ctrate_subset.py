@@ -1,49 +1,50 @@
 import os
-import requests
+import shutil
 from datasets import load_dataset
+from huggingface_hub import hf_hub_download
 from tqdm import tqdm
 
+# --- CONFIGURATION ---
 N_SAMPLES = 150
 SAVE_IMG_DIR = "ctrate_volumes"
 SAVE_TXT_DIR = "ctrate_reports"
 
+# Create local folders
 os.makedirs(SAVE_IMG_DIR, exist_ok=True)
 os.makedirs(SAVE_TXT_DIR, exist_ok=True)
 
-print("Loading CT-RATE reports config...")
-# This config works (we verified it in your last CLI test)
+print("Loading CT-RATE metadata...")
+# Load the 'reports' config to get the mapping of VolumeNames
 ds = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train", streaming=True)
 
-print(f"Processing first {N_SAMPLES} samples...")
+print(f"Downloading {N_SAMPLES} .nii.gz files...")
 
 for count, item in enumerate(tqdm(ds, total=N_SAMPLES)):
     if count >= N_SAMPLES:
         break
     
     try:
-        volume_name = item["VolumeName"]  # e.g., "train_0.nii.gz"
-        report_text = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
+        volume_name = item["VolumeName"]  # This is the 'train_X.nii.gz' name
+        
+        # 1. Save the Report (as a .txt file)
+        report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
+        txt_filename = volume_name.replace(".nii.gz", ".txt")
+        with open(os.path.join(SAVE_TXT_DIR, txt_filename), "w", encoding="utf-8") as f:
+            f.write(report_content)
 
-        # 1. Save the Report
-        txt_path = os.path.join(SAVE_TXT_DIR, volume_name.replace(".nii.gz", ".txt"))
-        with open(txt_path, "w", encoding="utf-8") as f:
-            f.write(report_text)
-
-        # 2. Download the Image File 
-        # The CT-RATE files are hosted in the 'volumes' folder of the repo
-        file_url = f"https://huggingface.co/datasets/ibrahimhamamci/CT-RATE/resolve/main/dataset/train/{volume_name}"
-        img_path = os.path.join(SAVE_IMG_DIR, volume_name)
-
-        # Download via requests (better control for large medical files)
-        response = requests.get(file_url, stream=True)
-        if response.status_code == 200:
-            with open(img_path, "wb") as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
-        else:
-            print(f"Could not download {volume_name}. Status: {response.status_code}")
+        # 2. Download the actual .nii.gz Volume
+        # We target 'train_fixed' for the best NIfTI compatibility
+        cached_file = hf_hub_download(
+            repo_id="ibrahimhamamci/CT-RATE",
+            filename=f"dataset/train_fixed/{volume_name}", 
+            repo_type="dataset"
+        )
+        
+        # 3. Copy the .nii.gz file to your folder
+        shutil.copy(cached_file, os.path.join(SAVE_IMG_DIR, volume_name))
 
     except Exception as e:
-        print(f"Error on sample {count}: {e}")
+        print(f"\n Error downloading {volume_name}: {e}")
+        continue
 
-print(f"\nSuccess! Saved {N_SAMPLES} files to {SAVE_IMG_DIR}")
+print(f"\n Done! Check the '{SAVE_IMG_DIR}' folder for your 150 .nii.gz files.")
