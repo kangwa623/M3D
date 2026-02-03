@@ -6,10 +6,10 @@ N_SAMPLES = 150
 SAVE_DIR = "ctrate_train_samples"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
-print("🚀 Loading CT-RATE training set...")
+print("Loading CT-RATE training set...")
 ds = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train")
 
-print(f"📦 Saving first {N_SAMPLES} samples...")
+print(f"Saving first {N_SAMPLES} samples...")
 
 for i in tqdm(range(N_SAMPLES)):
     item = ds[i]
@@ -25,4 +25,4 @@ for i in tqdm(range(N_SAMPLES)):
     with open(os.path.join(SAVE_DIR, volume_name.replace(".nii.gz", ".meta.txt")), "w") as f:
         f.write(str(item))
 
-print("✅ Done. 150 training samples saved.")
+print("Done. 150 training samples saved.")
