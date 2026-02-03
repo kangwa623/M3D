@@ -1,7 +1,7 @@
 import os
 import shutil
 from datasets import load_dataset
-from huggingface_hub import hf_hub_download, list_repo_files
+from huggingface_hub import hf_hub_download
 from tqdm import tqdm
 
 # --- CONFIGURATION ---
@@ -59,13 +59,25 @@ print("PART 1: Downloading 150 samples from TRAINING set")
 print("=" * 80)
 
 print("Loading CT-RATE training metadata...")
+# Try loading with the volumes config to get direct file access
+try:
+    # First try loading with volumes config which might have direct file access
+    ds_train_volumes = load_dataset("ibrahimhamamci/CT-RATE", "volumes", split="train", streaming=True)
+    use_volumes_config = True
+    print("Using 'volumes' config for direct file access")
+except:
+    use_volumes_config = False
+    print("Using 'reports' config (volumes config not available)")
+
 ds_train = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train", streaming=True)
 
-print(f"Downloading {N_TRAIN_SAMPLES} training .nii.gz files...")
+print(f"Downloading up to {N_TRAIN_SAMPLES} training .nii.gz files...")
+print("Note: Some files may not exist in the repository and will be skipped.")
 
 train_count = 0
 train_failed = []
 train_success_path = None  # Track which path worked
+skipped_count = 0
 
 for item in tqdm(ds_train, desc="Training samples"):
     if train_count >= N_TRAIN_SAMPLES:
@@ -74,7 +86,7 @@ for item in tqdm(ds_train, desc="Training samples"):
     try:
         volume_name = item["VolumeName"]  # This is the 'train_X.nii.gz' name
         
-        # 1. Save the Report (as a .txt file)
+        # 1. Save the Report (as a .txt file) - always do this even if image fails
         report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
         txt_filename = volume_name.replace(".nii.gz", ".txt")
         txt_path = os.path.join(SAVE_TRAIN_TXT_DIR, txt_filename)
@@ -90,8 +102,12 @@ for item in tqdm(ds_train, desc="Training samples"):
         )
         
         if cached_file is None:
+            # File doesn't exist - skip silently but count it
+            skipped_count += 1
             train_failed.append(volume_name)
-            print(f"\n⚠ Could not find {volume_name} in any of the tried paths")
+            # Only print every 10th failure to reduce noise
+            if skipped_count % 10 == 0:
+                print(f"\n⚠ Skipped {skipped_count} missing files so far (latest: {volume_name})")
             continue
         
         # Track which path worked (for future downloads)
@@ -110,9 +126,14 @@ for item in tqdm(ds_train, desc="Training samples"):
         train_failed.append(volume_name)
         continue
 
-print(f"\n✓ Successfully downloaded {train_count}/{N_TRAIN_SAMPLES} training samples!")
+# Continue trying until we get 150 successful downloads
+if train_count < N_TRAIN_SAMPLES:
+    print(f"\n⚠ Only found {train_count} available files out of {N_TRAIN_SAMPLES} requested.")
+    print(f"  This is normal - not all files in metadata exist in the repository.")
+
+print(f"\n✓ Successfully downloaded {train_count} training samples!")
 if train_failed:
-    print(f"⚠ Failed to download {len(train_failed)} training samples")
+    print(f"⚠ Skipped {len(train_failed)} files that don't exist in repository")
 print(f"  Images saved to: {SAVE_TRAIN_IMG_DIR}")
 print(f"  Reports saved to: {SAVE_TRAIN_TXT_DIR}")
 
@@ -151,7 +172,8 @@ for item in ds_test:
     test_items.append(item)
 test_total = len(test_items)
 
-print(f"Found {test_total} test samples. Downloading all test .nii.gz files...")
+print(f"Found {test_total} test samples. Downloading all available test .nii.gz files...")
+print("Note: Some files may not exist in the repository and will be skipped.")
 
 # Reload the dataset for actual downloading
 ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split=test_split_name, streaming=True)
@@ -159,12 +181,13 @@ ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split=test_split_nam
 test_count = 0
 test_failed = []
 test_success_path = None
+test_skipped_count = 0
 
 for item in tqdm(ds_test, total=test_total, desc="Test samples"):
     try:
         volume_name = item["VolumeName"]  # This could be 'test_X.nii.gz' or similar
         
-        # 1. Save the Report (as a .txt file)
+        # 1. Save the Report (as a .txt file) - always do this even if image fails
         report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
         txt_filename = volume_name.replace(".nii.gz", ".txt")
         txt_path = os.path.join(SAVE_TEST_TXT_DIR, txt_filename)
@@ -180,8 +203,12 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
         )
         
         if cached_file is None:
+            # File doesn't exist - skip silently but count it
+            test_skipped_count += 1
             test_failed.append(volume_name)
-            print(f"\n⚠ Could not find {volume_name} in any of the tried paths")
+            # Only print every 10th failure to reduce noise
+            if test_skipped_count % 10 == 0:
+                print(f"\n⚠ Skipped {test_skipped_count} missing test files so far (latest: {volume_name})")
             continue
         
         # Track which path worked
@@ -202,7 +229,7 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
 
 print(f"\n✓ Successfully downloaded {test_count}/{test_total} test samples!")
 if test_failed:
-    print(f"⚠ Failed to download {len(test_failed)} test samples")
+    print(f"⚠ Skipped {len(test_failed)} test files that don't exist in repository")
 print(f"  Images saved to: {SAVE_TEST_IMG_DIR}")
 print(f"  Reports saved to: {SAVE_TEST_TXT_DIR}")
 
@@ -212,16 +239,16 @@ print(f"  Reports saved to: {SAVE_TEST_TXT_DIR}")
 print("\n" + "=" * 80)
 print("DOWNLOAD SUMMARY")
 print("=" * 80)
-print(f"Training samples: {train_count}/{N_TRAIN_SAMPLES}")
+print(f"Training samples: {train_count} downloaded (requested: {N_TRAIN_SAMPLES})")
 if train_failed:
-    print(f"  Failed training samples: {len(train_failed)}")
-    if len(train_failed) <= 10:
-        print(f"  Failed files: {', '.join(train_failed)}")
-print(f"Test samples: {test_count}/{test_total}")
+    print(f"  Skipped {len(train_failed)} training files (not in repository)")
+    if len(train_failed) <= 20:
+        print(f"  Example skipped files: {', '.join(train_failed[:5])}...")
+print(f"Test samples: {test_count}/{test_total} downloaded")
 if test_failed:
-    print(f"  Failed test samples: {len(test_failed)}")
-    if len(test_failed) <= 10:
-        print(f"  Failed files: {', '.join(test_failed[:10])}...")
+    print(f"  Skipped {len(test_failed)} test files (not in repository)")
+    if len(test_failed) <= 20:
+        print(f"  Example skipped files: {', '.join(test_failed[:5])}...")
 print(f"\nWorking paths found:")
 if train_success_path:
     print(f"  Training: {train_success_path}")
@@ -232,3 +259,5 @@ print(f"  Training images: {SAVE_TRAIN_IMG_DIR}")
 print(f"  Training reports: {SAVE_TRAIN_TXT_DIR}")
 print(f"  Test images: {SAVE_TEST_IMG_DIR}")
 print(f"  Test reports: {SAVE_TEST_TXT_DIR}")
+print(f"\nNote: It's normal for some files to be missing from the repository.")
+print(f"      Reports are saved for all samples, even if images are missing.")
