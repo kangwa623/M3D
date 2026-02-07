@@ -112,21 +112,23 @@ def find_file_path_fast(repo_id, volume_name, split="train", repo_type="dataset"
     return None, None
 
 # ============================================================================
-# PART 1: Download 150 samples from training set
+# PART 1: Download 150 samples from training set (skip if already exists)
 # ============================================================================
 print("=" * 80)
-print("PART 1: Downloading 150 samples from TRAINING set (FAST VERSION)")
+print("PART 1: Downloading 150 samples from TRAINING set")
 print("=" * 80)
 
 print("Loading CT-RATE training metadata...")
 ds_train = load_dataset("ibrahimhamamci/CT-RATE", "reports", split="train", streaming=True)
 
-print(f"Downloading {N_TRAIN_SAMPLES} training .nii.gz files...")
+print(f"Downloading up to {N_TRAIN_SAMPLES} training .nii.gz files...")
+print("Note: Will skip files that already exist.")
 
 train_count = 0
 train_failed = []
 train_success_path = None
 total_processed = 0
+skipped_existing = 0
 
 for item in tqdm(ds_train, desc="Training samples"):
     total_processed += 1
@@ -137,13 +139,14 @@ for item in tqdm(ds_train, desc="Training samples"):
     try:
         volume_name = item["VolumeName"]
         
-        # Skip if file already exists
+        # Check if file already exists
         img_path = os.path.join(SAVE_TRAIN_IMG_DIR, volume_name)
         if os.path.exists(img_path):
             train_count += 1
+            skipped_existing += 1
             continue
         
-        # 1. Save the Report
+        # 1. Save the Report (update if needed)
         report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
         txt_filename = volume_name.replace(".nii.gz", ".txt")
         txt_path = os.path.join(SAVE_TRAIN_TXT_DIR, txt_filename)
@@ -180,10 +183,12 @@ for item in tqdm(ds_train, desc="Training samples"):
         train_failed.append(volume_name)
         continue
 
-print(f"\n✓ Successfully downloaded {train_count} training samples!")
-print(f"  Processed {total_processed} total samples from metadata")
-if total_processed > 0:
-    print(f"  Success rate: {train_count/total_processed*100:.1f}%")
+print(f"\n✓ Training set complete!")
+print(f"  Total files: {train_count}/{N_TRAIN_SAMPLES}")
+if skipped_existing > 0:
+    print(f"  Skipped existing: {skipped_existing} files")
+if train_failed:
+    print(f"  Failed to download: {len(train_failed)} files")
 print(f"  Images saved to: {SAVE_TRAIN_IMG_DIR}")
 print(f"  Reports saved to: {SAVE_TRAIN_TXT_DIR}")
 
@@ -221,6 +226,7 @@ for item in ds_test:
 test_total = len(test_items)
 
 print(f"Found {test_total} test samples. Downloading all available test .nii.gz files...")
+print("Note: Will skip files that already exist.")
 
 # Reload for downloading
 ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split=test_split_name, streaming=True)
@@ -228,18 +234,20 @@ ds_test = load_dataset("ibrahimhamamci/CT-RATE", "reports", split=test_split_nam
 test_count = 0
 test_failed = []
 test_success_path = None
+test_skipped_existing = 0
 
 for item in tqdm(ds_test, total=test_total, desc="Test samples"):
     try:
         volume_name = item["VolumeName"]
         
-        # Skip if file already exists
+        # Check if file already exists
         img_path = os.path.join(SAVE_TEST_IMG_DIR, volume_name)
         if os.path.exists(img_path):
             test_count += 1
+            test_skipped_existing += 1
             continue
         
-        # 1. Save the Report
+        # 1. Save the Report (update if needed)
         report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
         txt_filename = volume_name.replace(".nii.gz", ".txt")
         txt_path = os.path.join(SAVE_TEST_TXT_DIR, txt_filename)
@@ -268,17 +276,22 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
         
         test_count += 1
         
-        # Print progress every 10 files
-        if test_count % 10 == 0:
-            print(f"\n✓ Downloaded {test_count}/{test_total} test files")
+        # Print progress every 50 files (less frequent for large test set)
+        if test_count % 50 == 0:
+            print(f"\n✓ Downloaded {test_count}/{test_total} test files (skipped {test_skipped_existing} existing)")
 
     except Exception as e:
         test_failed.append(volume_name)
         continue
 
-print(f"\n✓ Successfully downloaded {test_count}/{test_total} test samples!")
+print(f"\n✓ Test set download complete!")
+print(f"  Total files: {test_count}/{test_total}")
+if test_skipped_existing > 0:
+    print(f"  Skipped existing: {test_skipped_existing} files")
 if test_failed:
-    print(f"  Skipped {len(test_failed)} test files (not in repository)")
+    print(f"  Failed to download: {len(test_failed)} files")
+print(f"  Images saved to: {SAVE_TEST_IMG_DIR}")
+print(f"  Reports saved to: {SAVE_TEST_TXT_DIR}")
 
 # ============================================================================
 # Summary
@@ -286,13 +299,19 @@ if test_failed:
 print("\n" + "=" * 80)
 print("DOWNLOAD SUMMARY")
 print("=" * 80)
-print(f"Training samples: {train_count} downloaded (requested: {N_TRAIN_SAMPLES})")
-print(f"  Processed {total_processed} samples from metadata")
+print(f"Training samples: {train_count}/{N_TRAIN_SAMPLES} downloaded")
 if total_processed > 0:
     print(f"  Success rate: {train_count/total_processed*100:.1f}%")
 print(f"\nTest samples: {test_count}/{test_total} downloaded")
+if test_total > 0:
+    print(f"  Success rate: {test_count/test_total*100:.1f}%")
+print(f"\nWorking paths found:")
 if train_success_path:
-    print(f"\nWorking paths found:")
     print(f"  Training: {train_success_path}")
-    if test_success_path:
-        print(f"  Test: {test_success_path}")
+if test_success_path:
+    print(f"  Test: {test_success_path}")
+print(f"\nDirectory structure:")
+print(f"  Training images: {os.path.abspath(SAVE_TRAIN_IMG_DIR)}")
+print(f"  Training reports: {os.path.abspath(SAVE_TRAIN_TXT_DIR)}")
+print(f"  Test images: {os.path.abspath(SAVE_TEST_IMG_DIR)}")
+print(f"  Test reports: {os.path.abspath(SAVE_TEST_TXT_DIR)}")
