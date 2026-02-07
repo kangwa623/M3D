@@ -21,52 +21,76 @@ os.makedirs(SAVE_TEST_TXT_DIR, exist_ok=True)
 def construct_nested_path(volume_name, split="train"):
     """
     Construct the nested path from filename.
-    Example: train_1_a_1.nii.gz -> dataset/train/train_1/train_1_a/train_1_a_1.nii.gz
+    Handles train_, test_, and valid_ prefixes.
     """
     # Remove .nii.gz extension
     base_name = volume_name.replace(".nii.gz", "")
     
-    # Pattern: train_<number>_<letter>_<number>
-    # Extract: train_1_a_1 -> patient=1, phase=a, scan=1
+    # Pattern 1: train_<number>_<letter>_<number>
     match = re.match(r'train_(\d+)_([a-z])_(\d+)', base_name)
     if match:
         patient_num = match.group(1)
         phase = match.group(2)
-        scan_num = match.group(3)
-        
-        # Construct nested path
         nested_path = f"dataset/{split}/train_{patient_num}/train_{patient_num}_{phase}/{volume_name}"
         return nested_path
     
-    # Try test pattern: test_<number>_<letter>_<number>
+    # Pattern 2: valid_<number>_<letter>_<number> (for test/validation set)
+    match = re.match(r'valid_(\d+)_([a-z])_(\d+)', base_name)
+    if match:
+        patient_num = match.group(1)
+        phase = match.group(2)
+        
+        # Try multiple possible locations for valid files
+        paths_to_try = [
+            f"dataset/valid/valid_{patient_num}/valid_{patient_num}_{phase}/{volume_name}",
+            f"dataset/valid_fixed/valid_{patient_num}/valid_{patient_num}_{phase}/{volume_name}",
+            f"dataset/{split}/valid_{patient_num}/valid_{patient_num}_{phase}/{volume_name}",
+            f"dataset/{split}_fixed/valid_{patient_num}/valid_{patient_num}_{phase}/{volume_name}",
+        ]
+        return paths_to_try
+    
+    # Pattern 3: test_<number>_<letter>_<number>
     match = re.match(r'test_(\d+)_([a-z])_(\d+)', base_name)
     if match:
         patient_num = match.group(1)
         phase = match.group(2)
-        scan_num = match.group(3)
-        
         nested_path = f"dataset/{split}/test_{patient_num}/test_{patient_num}_{phase}/{volume_name}"
         return nested_path
     
-    # Fallback: try direct paths
     return None
 
 def find_file_path_fast(repo_id, volume_name, split="train", repo_type="dataset"):
     """Try the correct nested path first, then fallback options."""
-    # First, try the constructed nested path
-    nested_path = construct_nested_path(volume_name, split)
-    if nested_path:
-        try:
-            cached_file = hf_hub_download(
-                repo_id=repo_id,
-                filename=nested_path,
-                repo_type=repo_type
-            )
-            return cached_file, nested_path
-        except:
-            pass
+    # Get path(s) to try
+    paths_to_try = construct_nested_path(volume_name, split)
     
-    # Fallback: try a few common patterns
+    # Handle both single path and list of paths
+    if paths_to_try:
+        if isinstance(paths_to_try, list):
+            # Try multiple paths
+            for nested_path in paths_to_try:
+                try:
+                    cached_file = hf_hub_download(
+                        repo_id=repo_id,
+                        filename=nested_path,
+                        repo_type=repo_type
+                    )
+                    return cached_file, nested_path
+                except:
+                    continue
+        else:
+            # Single path
+            try:
+                cached_file = hf_hub_download(
+                    repo_id=repo_id,
+                    filename=paths_to_try,
+                    repo_type=repo_type
+                )
+                return cached_file, paths_to_try
+            except:
+                pass
+    
+    # Fallback: try common patterns
     fallback_paths = [
         f"dataset/{split}_fixed/{volume_name}",
         f"dataset/{split}/{volume_name}",
@@ -113,6 +137,12 @@ for item in tqdm(ds_train, desc="Training samples"):
     try:
         volume_name = item["VolumeName"]
         
+        # Skip if file already exists
+        img_path = os.path.join(SAVE_TRAIN_IMG_DIR, volume_name)
+        if os.path.exists(img_path):
+            train_count += 1
+            continue
+        
         # 1. Save the Report
         report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
         txt_filename = volume_name.replace(".nii.gz", ".txt")
@@ -138,7 +168,6 @@ for item in tqdm(ds_train, desc="Training samples"):
             print(f"\n✓ Found working path pattern: {train_success_path}")
         
         # 3. Copy the file
-        img_path = os.path.join(SAVE_TRAIN_IMG_DIR, volume_name)
         shutil.copy(cached_file, img_path)
         
         train_count += 1
@@ -204,6 +233,12 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
     try:
         volume_name = item["VolumeName"]
         
+        # Skip if file already exists
+        img_path = os.path.join(SAVE_TEST_IMG_DIR, volume_name)
+        if os.path.exists(img_path):
+            test_count += 1
+            continue
+        
         # 1. Save the Report
         report_content = f"FINDINGS:\n{item['Findings_EN']}\n\nIMPRESSIONS:\n{item['Impressions_EN']}"
         txt_filename = volume_name.replace(".nii.gz", ".txt")
@@ -229,7 +264,6 @@ for item in tqdm(ds_test, total=test_total, desc="Test samples"):
             print(f"\n✓ Found working path pattern: {test_success_path}")
         
         # 3. Copy the file
-        img_path = os.path.join(SAVE_TEST_IMG_DIR, volume_name)
         shutil.copy(cached_file, img_path)
         
         test_count += 1
