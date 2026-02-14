@@ -20,6 +20,13 @@ cd /nfs/usrhome2/africanstu/kangwa/m3d/M3D
 source /home/africanstu/miniconda3/etc/profile.d/conda.sh
 conda activate /nfs/usrhome2/africanstu/miniconda3/envs/m3d
 
+# Check if transformers is installed
+echo "Checking dependencies..."
+python -c "import transformers" 2>/dev/null || {
+    echo "Installing transformers..."
+    pip install transformers==4.42.3
+}
+
 # Create output directory if it doesn't exist
 mkdir -p ./LaMed/output/LaMed-Phi3-4B-pretrain
 
@@ -31,18 +38,24 @@ echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
 python -c "import torch; print(f'PyTorch sees {torch.cuda.device_count()} GPU(s)')"
 nvidia-smi --query-gpu=index,name,memory.free,memory.total --format=csv,noheader | grep -E "^[0-2],"
 
+# Clear any cached accelerate config that might cause issues
+echo ""
+echo "Clearing cached accelerate config..."
+rm -f ~/.cache/huggingface/accelerate/default_config.yaml 2>/dev/null || true
+
 echo ""
 echo "=========================================="
 echo "Starting Training"
 echo "=========================================="
 
 # Run training with accelerate
-# Using explicit num_processes=3 to match 3 GPUs
+# CRITICAL: Use --config_file to override any cached config
+# CRITICAL: Explicitly set num_processes=3 to match 3 visible GPUs
 accelerate launch \
+    --config_file deepspeed.yaml \
     --num_processes 3 \
     --num_machines 1 \
     --mixed_precision bf16 \
-    --config_file deepspeed.yaml \
     LaMed/src/train/train.py \
     --version v0 \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
