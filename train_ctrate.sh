@@ -7,12 +7,17 @@ export CUDA_DEVICE_ORDER=PCI_BUS_ID
 # Navigate to project
 cd /nfs/usrhome2/africanstu/kangwa/m3d/M3D
 
-# Activate environment (proper way in bash script)
+# Activate environment
 source /home/africanstu/miniconda3/etc/profile.d/conda.sh
 conda activate /nfs/usrhome2/africanstu/miniconda3/envs/m3d
 
-# Run training with accelerate
-accelerate launch --config_file deepspeed.yaml LaMed/src/train/train.py \
+# Run training with explicit num_processes override
+accelerate launch \
+    --num_processes 3 \
+    --num_machines 1 \
+    --mixed_precision bf16 \
+    --config_file deepspeed.yaml \
+    LaMed/src/train/train.py \
     --version v0 \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
     --model_type lamed_phi3 \
