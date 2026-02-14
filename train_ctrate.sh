@@ -1,16 +1,17 @@
 #!/bin/bash
 
-# Use GPUs 0, 1, 2 (avoid GPU 3)
-export CUDA_VISIBLE_DEVICES=0,2
+# Use GPUs 0, 1, 2 (avoid GPU 3 which is busy)
+export CUDA_VISIBLE_DEVICES=0,1,2
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
 
 # Navigate to project
- cd /nfs/usrhome2/africanstu/kangwa/m3d/M3D
+cd /nfs/usrhome2/africanstu/kangwa/m3d/M3D
 
-# Activate environment
- conda activate /nfs/usrhome2/africanstu/miniconda3/envs/m3d
+# Activate environment (proper way in bash script)
+source /home/africanstu/miniconda3/etc/profile.d/conda.sh
+conda activate /nfs/usrhome2/africanstu/miniconda3/envs/m3d
 
-# Run training with accelerate (configure first: accelerate config)
+# Run training with accelerate
 accelerate launch --config_file deepspeed.yaml LaMed/src/train/train.py \
     --version v0 \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
