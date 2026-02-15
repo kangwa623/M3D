@@ -7,7 +7,7 @@
 # ============================================================================
 
 # GPU Configuration - Use GPUs 0, 1, 2 (avoid GPU 3 which is busy)
-export CUDA_VISIBLE_DEVICES=0,1,2
+export CUDA_VISIBLE_DEVICES=0
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
 
 # Set Python path
@@ -53,7 +53,7 @@ echo "=========================================="
 # CRITICAL: Explicitly set num_processes=3 to match 3 visible GPUs
 accelerate launch \
     --config_file deepspeed.yaml \
-    --num_processes 3 \
+    --num_processes 1 \
     --num_machines 1 \
     --mixed_precision bf16 \
     LaMed/src/train/train.py \
