@@ -114,7 +114,8 @@ accelerate launch \
     --dataloader_num_workers 4 \
     --report_to tensorboard \
     2>&1 | tee "$OUTPUT_DIR/training.log"
-
+# Log this run to training_results.csv (and training_results.md)
+python "$M3D_ROOT/log_training_result.py" --log "$OUTPUT_DIR/training.log" --output_dir "$OUTPUT_DIR" || true
 echo ""
 echo "=========================================="
 echo "Training complete."
