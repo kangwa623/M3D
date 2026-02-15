@@ -1,72 +1,99 @@
 #!/bin/bash
 
 # ============================================================================
-# M3D Training Script for CT-RATE Dataset
+# M3D Training Script for CT-RATE Dataset (Single GPU)
 # ============================================================================
-# This script trains M3D model on CT-RATE dataset using 3 GPUs (0, 1, 2)
+# Uses one GPU only. Paths are relative to the script directory.
 # ============================================================================
 
-# GPU Configuration - Use GPUs 0, 1, 2 (avoid GPU 3 which is busy)
+set -e
+
+# Project root: directory containing this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+export M3D_ROOT="$SCRIPT_DIR"
+export PYTHONPATH="$M3D_ROOT:$PYTHONPATH"
+
+# ----------------------------------------------------------------------------
+# GPU: use a single GPU (change to 1, 2, 3 if needed)
+# ----------------------------------------------------------------------------
 export CUDA_VISIBLE_DEVICES=0
 export CUDA_DEVICE_ORDER=PCI_BUS_ID
 
-# Set Python path
-export PYTHONPATH=/nfs/usrhome2/africanstu/kangwa/m3d/M3D:$PYTHONPATH
+# ----------------------------------------------------------------------------
+# Optional: activate conda if available (comment out or adjust if not using conda)
+# ----------------------------------------------------------------------------
+if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+    source "$HOME/miniconda3/etc/profile.d/conda.sh"
+    conda activate m3d 2>/dev/null || true
+elif [ -n "$CONDA_PREFIX" ]; then
+    :  # already in conda
+fi
 
-# Navigate to project directory
-cd /nfs/usrhome2/africanstu/kangwa/m3d/M3D
+# ----------------------------------------------------------------------------
+# Output and data paths (relative to project root)
+# ----------------------------------------------------------------------------
+OUTPUT_DIR="$M3D_ROOT/LaMed/output/LaMed-Phi3-4B-pretrain"
+DATA_ROOT="$M3D_ROOT/ctrate_volumes/m3d_npy"
+CAP_JSON="$M3D_ROOT/Data/ctrate_dataset.json"
+PRETRAIN_VIT="$M3D_ROOT/LaMed/pretrained_model/M3D-CLIP/pretrained_ViT.bin"
 
-# Activate conda environment
-source /home/africanstu/miniconda3/etc/profile.d/conda.sh
-conda activate /nfs/usrhome2/africanstu/miniconda3/envs/m3d
+mkdir -p "$OUTPUT_DIR"
 
-# Check if transformers is installed
-echo "Checking dependencies..."
-python -c "import transformers" 2>/dev/null || {
-    echo "Installing transformers..."
-    pip install transformers==4.42.3
+# ----------------------------------------------------------------------------
+# Pre-flight checks
+# ----------------------------------------------------------------------------
+echo "=========================================="
+echo "M3D CT-RATE Training (Single GPU)"
+echo "=========================================="
+echo "Project root: $M3D_ROOT"
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+echo "Output dir:   $OUTPUT_DIR"
+echo "Data root:    $DATA_ROOT"
+echo "Caption JSON: $CAP_JSON"
+echo "=========================================="
+
+python -c "import torch; n=torch.cuda.device_count(); print(f'PyTorch sees {n} GPU(s)'); exit(0 if n>=1 else 1)" || {
+    echo "Error: No GPU visible. Check CUDA_VISIBLE_DEVICES."
+    exit 1
 }
 
-# Create output directory if it doesn't exist
-mkdir -p ./LaMed/output/LaMed-Phi3-4B-pretrain
+if [ ! -f "$CAP_JSON" ]; then
+    echo "Warning: $CAP_JSON not found. Run create_ctrate_dataset_json.py after preprocess_v1.py"
+    exit 1
+fi
 
-# Verify GPU availability
-echo "=========================================="
-echo "GPU Configuration"
-echo "=========================================="
-echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
-python -c "import torch; print(f'PyTorch sees {torch.cuda.device_count()} GPU(s)')"
-nvidia-smi --query-gpu=index,name,memory.free,memory.total --format=csv,noheader | grep -E "^[0-2],"
+if [ ! -f "$PRETRAIN_VIT" ]; then
+    echo "Warning: Pretrained ViT not found at $PRETRAIN_VIT"
+    exit 1
+fi
 
-# Clear any cached accelerate config that might cause issues
-echo ""
-echo "Clearing cached accelerate config..."
+# Clear cached accelerate config so single-GPU settings take effect
 rm -f ~/.cache/huggingface/accelerate/default_config.yaml 2>/dev/null || true
 
 echo ""
-echo "=========================================="
-echo "Starting Training"
-echo "=========================================="
+echo "Starting training..."
+echo ""
 
-# Run training with accelerate
-# CRITICAL: Use --config_file to override any cached config
-# CRITICAL: Explicitly set num_processes=3 to match 3 visible GPUs
+# ----------------------------------------------------------------------------
+# Launch training: 1 process, 1 GPU
+# ----------------------------------------------------------------------------
 accelerate launch \
-    --config_file deepspeed.yaml \
+    --config_file "$M3D_ROOT/deepspeed.yaml" \
     --num_processes 1 \
     --num_machines 1 \
     --mixed_precision bf16 \
-    LaMed/src/train/train.py \
+    "$M3D_ROOT/LaMed/src/train/train.py" \
     --version v0 \
     --model_name_or_path microsoft/Phi-3-mini-4k-instruct \
     --model_type lamed_phi3 \
     --vision_tower vit3d \
-    --pretrain_vision_model ./LaMed/pretrained_model/M3D-CLIP/pretrained_ViT.bin \
+    --pretrain_vision_model "$PRETRAIN_VIT" \
     --tune_mm_mlp_adapter True \
     --bf16 True \
-    --output_dir ./LaMed/output/LaMed-Phi3-4B-pretrain \
-    --data_root /nfs/usrhome2/africanstu/kangwa/m3d/M3D/ctrate_volumes/m3d_npy \
-    --cap_data_path ./Data/ctrate_dataset.json \
+    --output_dir "$OUTPUT_DIR" \
+    --data_root "$DATA_ROOT" \
+    --cap_data_path "$CAP_JSON" \
     --num_train_epochs 3 \
     --per_device_train_batch_size 2 \
     --per_device_eval_batch_size 2 \
@@ -84,11 +111,11 @@ accelerate launch \
     --logging_steps 10 \
     --gradient_checkpointing False \
     --dataloader_pin_memory True \
-    --dataloader_num_workers 8 \
+    --dataloader_num_workers 4 \
     --report_to tensorboard \
-    2>&1 | tee ./LaMed/output/LaMed-Phi3-4B-pretrain/training.log
+    2>&1 | tee "$OUTPUT_DIR/training.log"
 
 echo ""
 echo "=========================================="
-echo "Training Complete!"
+echo "Training complete."
 echo "=========================================="
