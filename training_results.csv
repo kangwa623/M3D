@@ -1,0 +1,2 @@
+timestamp,output_dir,run_dir,train_loss,train_runtime_s,train_samples_per_second,train_steps_per_second,epochs,steps
+2026-02-15T10:29:02.570676,/nfs/usrhome2/africanstu/kangwa/m3d/M3D/LaMed/output/LaMed-Phi3-4B-pretrain,LaMed-Phi3-4B-pretrain,2.0778335480462937,132.3796,3.127,0.793,3.0,105
